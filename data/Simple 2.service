@@ -1,0 +1,12 @@
+[Unit]
+Description=
+After=
+Wants=
+
+[Service]
+User=root
+ExecStart=/bin/true
+WorkingDirectory=/home
+
+[Install]
+WantedBy=multi-user.target

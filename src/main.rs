@@ -2,6 +2,7 @@ use dialoguer::theme::ColorfulTheme;
 use dialoguer::Confirm;
 use directories::ProjectDirs;
 use nix::unistd::Uid;
+use std::fs;
 use std::io;
 use std::path::PathBuf;
 use std::process::exit;
@@ -76,14 +77,17 @@ fn render_home<'a>() -> Paragraph<'a> {
     home
 }
 
-fn render_main_contents<'a>(systemd_list_state: &ListState) -> (List<'a>, Paragraph<'a>) {
+fn render_main_contents<'a>(
+    systemd_list_state: &ListState,
+    templates_list: &Vec<String>,
+) -> (List<'a>, Paragraph<'a>) {
     let templates_block = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
         .title("Select a template")
         .border_type(BorderType::Plain);
 
-    let templates_list = vec!["Simple 1", "Simple 2", "Simple 3"];
+    //let templates_list = vec!["Simple 1", "Simple 2", "Simple 3"];
     let items: Vec<_> = templates_list
         .iter()
         .map(|template| {
@@ -127,19 +131,53 @@ fn check_if_root_user() -> bool {
     Uid::effective().is_root()
 }
 
-fn check_if_config_dir_exists() -> Option<bool> {
-    let proj_dirs = ProjectDirs::from("_", "_", "")?;
-    println!("{:?}", &proj_dirs.config_dir());
+fn check_if_config_dir_exists(dir: Option<&str>) -> Option<bool> {
+    let app = dir.unwrap_or("");
+    let proj_dirs = ProjectDirs::from("_", "_", app)?;
+    //println!("{:?}", &proj_dirs.config_dir());
 
     let result = PathBuf::from(&proj_dirs.config_dir()).try_exists();
-    println!("{:?}", result);
+    //println!("{:?}", result);
     match result {
         Ok(config_dir) => Some(config_dir),
         Err(_) => Some(false),
     }
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn find_service_templates() -> Vec<String> {
+    let proj_dirs = ProjectDirs::from("_", "_", "create-systemd-service").unwrap();
+    let templates_path = proj_dirs.config_dir();
+
+    let templates = fs::read_dir(templates_path)
+        .unwrap()
+        .filter(|entry| {
+            entry
+                .as_ref()
+                .unwrap()
+                .file_name()
+                .into_string()
+                .unwrap()
+                .contains(".service")
+        })
+        .map(|entry| {
+            entry
+                .unwrap()
+                .file_name()
+                .into_string()
+                .unwrap()
+                .replace(".service", "")
+        })
+        .collect::<Vec<_>>();
+    templates
+
+    //println!("{:?}", templates);
+}
+
+fn check_if_systemd_config_dir_exists() -> Option<bool> {
+    check_if_config_dir_exists(Some("create-systemd-service"))
+}
+
+fn prerequisites() {
     if !check_if_root_user() {
         if Confirm::with_theme(&ColorfulTheme::default())
             .with_prompt("WARNING: User does not have root privileges. This will mean you cannot write to /etc/system/system. Start program as root if you want to write to this location. Quit?")
@@ -151,17 +189,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    if let Some(does_config_exist) = check_if_config_dir_exists() {
-        if does_config_exist {
-            println!("Dir exists");
-        } else {
-            println!("Dir does not exist");
+    if let Some(does_config_exist) = check_if_config_dir_exists(None) {
+        if !does_config_exist {
+            eprintln!("~/.config dir does not exist. Reinstall this program. Bye bye.");
+            exit(-1);
         }
-    } else {
-        println!("Dir really really does not exist");
     }
 
-    exit(0);
+    if let Some(does_config_exist) = check_if_systemd_config_dir_exists() {
+        if !does_config_exist {
+            eprintln!(
+                "~/.config/create-systemd-dir does not exist. Reinstall this program. Bye bye."
+            );
+        }
+    }
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    prerequisites();
+    find_service_templates();
     enable_raw_mode().expect("can run in raw mode");
     let stdout = io::stdout();
     let backend = CrosstermBackend::new(stdout);
@@ -172,6 +218,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut active_menu_item = MenuItem::Home;
 
     let simple1 = PremadeSystemdTemplate::get_template_from_disk();
+
+    let service_templates = find_service_templates();
 
     terminal.draw(|rect| {
         let size = rect.size();
@@ -231,7 +279,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let mut systemd_list_state = ListState::default();
         systemd_list_state.select(Some(0));
-        let (left, right) = render_main_contents(&systemd_list_state);
+        let (left, right) = render_main_contents(&systemd_list_state, &service_templates);
         rect.render_stateful_widget(left, pets_chunks[0], &mut systemd_list_state);
         rect.render_widget(right, pets_chunks[1]);
         rect.render_widget(copyright, chunks[2]);
