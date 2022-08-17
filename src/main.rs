@@ -79,7 +79,8 @@ fn render_home<'a>() -> Paragraph<'a> {
 
 fn render_main_contents<'a>(
     systemd_list_state: &ListState,
-    templates_list: &Vec<String>,
+    templates_list: &'a Vec<String>,
+    templates_content: &'a Vec<String>,
 ) -> (List<'a>, Paragraph<'a>) {
     let templates_block = Block::default()
         .borders(Borders::ALL)
@@ -113,9 +114,9 @@ fn render_main_contents<'a>(
             .add_modifier(Modifier::BOLD),
     );
 
-    let systemd_detail = Paragraph::new("boo")
+    let systemd_detail = Paragraph::new(&*templates_content[0])
         .style(Style::default().fg(Color::LightCyan))
-        .alignment(Alignment::Center)
+        .alignment(Alignment::Left)
         .block(
             Block::default()
                 .borders(Borders::ALL)
@@ -144,10 +145,28 @@ fn check_if_config_dir_exists(dir: Option<&str>) -> Option<bool> {
     }
 }
 
-fn find_service_templates() -> Vec<String> {
+fn find_service_templates() -> (Vec<String>, Vec<String>) {
     let proj_dirs = ProjectDirs::from("_", "_", "create-systemd-service").unwrap();
     let templates_path = proj_dirs.config_dir();
 
+    let mut v1: Vec<String> = vec![];
+    let mut v2: Vec<String> = vec![];
+
+    for template_result in fs::read_dir(templates_path).unwrap() {
+        if let Ok(template) = template_result {
+            let file_name = template.file_name().into_string().unwrap();
+            if file_name.contains(".service") {
+                let template_name = file_name.replace(".service", "");
+                let template_contents = fs::read_to_string(template.path()).unwrap();
+                v1.push(template_name);
+                v2.push(template_contents);
+            }
+        }
+    }
+
+    (v1, v2)
+
+    /*
     let templates = fs::read_dir(templates_path)
         .unwrap()
         .filter(|entry| {
@@ -168,7 +187,9 @@ fn find_service_templates() -> Vec<String> {
                 .replace(".service", "")
         })
         .collect::<Vec<_>>();
+
     templates
+    */
 
     //println!("{:?}", templates);
 }
@@ -207,7 +228,7 @@ fn prerequisites() {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     prerequisites();
-    find_service_templates();
+    //find_service_templates();
     enable_raw_mode().expect("can run in raw mode");
     let stdout = io::stdout();
     let backend = CrosstermBackend::new(stdout);
@@ -219,7 +240,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let simple1 = PremadeSystemdTemplate::get_template_from_disk();
 
-    let service_templates = find_service_templates();
+    let (service_templates, service_contents) = find_service_templates();
 
     terminal.draw(|rect| {
         let size = rect.size();
@@ -279,7 +300,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let mut systemd_list_state = ListState::default();
         systemd_list_state.select(Some(0));
-        let (left, right) = render_main_contents(&systemd_list_state, &service_templates);
+        let (left, right) =
+            render_main_contents(&systemd_list_state, &service_templates, &service_contents);
         rect.render_stateful_widget(left, pets_chunks[0], &mut systemd_list_state);
         rect.render_widget(right, pets_chunks[1]);
         rect.render_widget(copyright, chunks[2]);
