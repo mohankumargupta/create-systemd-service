@@ -3,13 +3,13 @@ use tui::{
     layout::{Alignment, Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, List, ListItem, ListState, Paragraph, Tabs},
+    widgets::{Block, BorderType, Borders, List, ListItem, Paragraph, Tabs},
     Frame,
 };
 
 use crate::app::App;
 
-pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &App) {
+pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     let size = frame.size();
 
     let chunks = Layout::default()
@@ -46,6 +46,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &App) {
         .block(Block::default().title("Menu").borders(Borders::ALL))
         .style(Style::default().fg(Color::White))
         .highlight_style(Style::default().fg(Color::Yellow))
+        .select(0)
         .divider(Span::raw("|"));
 
     let copyright = Paragraph::new("pet-CLI 2020 - all rights reserved")
@@ -79,8 +80,8 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &App) {
         })
         .collect();
 
-    let mut systemd_list_state = ListState::default();
-    systemd_list_state.select(Some(0));
+    //let mut systemd_list_state = ListState::default();
+    //systemd_list_state.select(Some(0));
 
     /*
     let selected_template = app
@@ -117,7 +118,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &App) {
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(chunks[1]);
 
-    let mut systemd_list_state = ListState::default();
-    frame.render_stateful_widget(list, pets_chunks[0], &mut systemd_list_state);
+    //let mut systemd_list_state = ListState::default();
+    frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
     frame.render_widget(systemd_detail, pets_chunks[1]);
 }

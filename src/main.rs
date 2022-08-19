@@ -1,4 +1,5 @@
 mod app;
+mod statefullist;
 mod ui;
 
 use app::App;
@@ -74,9 +75,9 @@ fn prerequisites() {
     }
 }
 
-fn start_app<B: Backend>(terminal: &mut Terminal<B>, app: App) -> io::Result<()> {
+fn start_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
     loop {
-        terminal.draw(|f| ui(f, &app))?;
+        terminal.draw(|f| ui(f, app))?;
 
         if let Event::Key(key) = event::read()? {
             match key.code {
@@ -98,8 +99,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    let app = App::new();
-    let res = start_app(&mut terminal, app);
+    let mut app = App::new();
+    let res = start_app(&mut terminal, &mut app);
 
     // restore terminal
     disable_raw_mode()?;

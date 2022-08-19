@@ -1,8 +1,12 @@
 use std::fs;
 
 use directories::ProjectDirs;
+use tui::widgets::ListState;
+
+use crate::statefullist::StatefulList;
 
 pub struct App {
+    pub lhs_list: StatefulList<String>,
     pub template_names: Vec<String>,
     pub template_contents: Vec<String>,
 }
@@ -10,10 +14,15 @@ pub struct App {
 impl App {
     pub fn new() -> Self {
         let (template_names, template_contents) = Self::find_service_templates();
-        App {
-            template_names: template_names,
+        let mut lhs_list_state = ListState::default();
+        lhs_list_state.select(Some(0));
+        let mut app = App {
+            lhs_list: StatefulList::with_items(template_names.clone()),
+            template_names: template_names.clone(),
             template_contents: template_contents,
-        }
+        };
+        app.lhs_list.state.select(Some(0));
+        app
     }
 
     pub fn find_service_templates() -> (Vec<String>, Vec<String>) {
