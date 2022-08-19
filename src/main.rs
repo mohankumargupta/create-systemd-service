@@ -25,10 +25,6 @@ use tui::backend::Backend;
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 use tui::{backend::CrosstermBackend, Terminal};
 
-pub trait SystemdTemplate {
-    fn get_template_from_disk() -> String;
-}
-
 fn check_if_root_user() -> bool {
     Uid::effective().is_root()
 }
