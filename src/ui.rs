@@ -81,21 +81,6 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         })
         .collect();
 
-    //let mut systemd_list_state = ListState::default();
-    //systemd_list_state.select(Some(0));
-
-    /*
-    let selected_template = app
-        .template_names
-        .get(
-            systemd_list_state
-                .selected()
-                .expect("there is always a selected pet"),
-        )
-        .expect("exists")
-        .clone();
-    */
-
     let list = List::new(items).block(templates_block).highlight_style(
         Style::default()
             .bg(Color::Yellow)
@@ -124,7 +109,6 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(chunks[1]);
 
-    //let mut systemd_list_state = ListState::default();
     frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
     frame.render_widget(systemd_detail, pets_chunks[1]);
 }
