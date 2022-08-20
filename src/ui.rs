@@ -70,9 +70,10 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .border_type(BorderType::Plain);
 
     let items: Vec<_> = app
-        .template_names
+        .lhs_list
+        .items
         .iter()
-        .map(|template| {
+        .map(|(template, contents)| {
             ListItem::new(Spans::from(vec![Span::styled(
                 template.clone(),
                 Style::default(),
@@ -102,7 +103,8 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             .add_modifier(Modifier::BOLD),
     );
 
-    let systemd_detail = Paragraph::new(&*app.template_contents[0])
+    let &(_, template_contents) = &app.lhs_list.items.get(0).unwrap();
+    let systemd_detail = Paragraph::new(template_contents.clone())
         .style(Style::default().fg(Color::LightCyan))
         .alignment(Alignment::Left)
         .block(

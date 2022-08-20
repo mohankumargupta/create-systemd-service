@@ -4,25 +4,25 @@ use tui::widgets::ListState;
 #[derive(Debug)]
 pub struct StatefulList<T> {
     /// List items (states).
-    pub items: Vec<T>,
+    pub items: Vec<(T, T)>,
     /// State that can be modified by TUI.
     pub state: ListState,
 }
 
 impl<T> StatefulList<T> {
     /// Constructs a new instance of `StatefulList`.
-    pub fn new(items: Vec<T>, mut state: ListState) -> StatefulList<T> {
+    pub fn new(items: Vec<(T, T)>, mut state: ListState) -> StatefulList<T> {
         state.select(Some(0));
         Self { items, state }
     }
 
     /// Construct a new `StatefulList` with given items.
-    pub fn with_items(items: Vec<T>) -> StatefulList<T> {
+    pub fn with_items(items: Vec<(T, T)>) -> StatefulList<T> {
         Self::new(items, ListState::default())
     }
 
     /// Returns the selected item.
-    pub fn selected(&self) -> Option<&T> {
+    pub fn selected(&self) -> Option<&(T, T)> {
         self.items.get(self.state.selected()?)
     }
 
@@ -57,6 +57,7 @@ impl<T> StatefulList<T> {
     }
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -72,3 +73,4 @@ mod tests {
         assert_eq!(Some(1), list.state.selected());
     }
 }
+*/
