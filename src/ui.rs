@@ -73,7 +73,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .lhs_list
         .items
         .iter()
-        .map(|(template, contents)| {
+        .map(|(template, _)| {
             ListItem::new(Spans::from(vec![Span::styled(
                 template.clone(),
                 Style::default(),
@@ -103,7 +103,11 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             .add_modifier(Modifier::BOLD),
     );
 
-    let &(_, template_contents) = &app.lhs_list.items.get(0).unwrap();
+    let &(_, template_contents) = &app
+        .lhs_list
+        .items
+        .get(app.lhs_list.state.selected().unwrap())
+        .unwrap();
     let systemd_detail = Paragraph::new(template_contents.clone())
         .style(Style::default().fg(Color::LightCyan))
         .alignment(Alignment::Left)
