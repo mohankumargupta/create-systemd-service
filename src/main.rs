@@ -6,25 +6,24 @@ use app::App;
 use ui::ui;
 
 use crossterm::event;
-use crossterm::event::DisableMouseCapture;
-use crossterm::event::EnableMouseCapture;
-use crossterm::event::Event;
-use crossterm::event::KeyCode;
+use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode};
 use crossterm::execute;
-use crossterm::terminal::EnterAlternateScreen;
-use crossterm::terminal::LeaveAlternateScreen;
+use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
+
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Confirm;
+
 use directories::ProjectDirs;
 use nix::unistd::Uid;
 use std::error::Error;
 use std::io;
 use std::path::PathBuf;
 use std::process::exit;
-use tui::backend::Backend;
+
+use tui::backend::{Backend, CrosstermBackend};
+use tui::Terminal;
 
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
-use tui::{backend::CrosstermBackend, Terminal};
 
 fn check_if_root_user() -> bool {
     Uid::effective().is_root()
