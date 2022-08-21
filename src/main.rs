@@ -5,7 +5,7 @@ mod ui;
 use app::App;
 use ui::ui;
 
-use crossterm::event;
+use crossterm::event::{self, KeyModifiers};
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode};
 use crossterm::execute;
 use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
@@ -79,21 +79,17 @@ fn start_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Resul
         terminal.draw(|f| ui(f, app))?;
 
         if let Event::Key(key) = event::read()? {
+            if key.modifiers == KeyModifiers::CONTROL {
+                if let KeyCode::Char('x') = key.code {
+                    return Ok(());
+                }
+            }
             if let KeyCode::Char('q') = key.code {
                 return Ok(());
             } else {
                 app.handle_keyboard(key.code);
             }
         }
-
-        /*
-        if let Event::Key(key) = event::read()? {
-            match key.code {
-                KeyCode::Char('q') => return Ok(()),
-                _ => {}
-            }
-        }
-        */
     }
 }
 
