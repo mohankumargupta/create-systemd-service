@@ -1,5 +1,6 @@
 use std::fs;
 
+use crossterm::event::KeyCode;
 use directories::ProjectDirs;
 use tui::widgets::ListState;
 
@@ -20,6 +21,22 @@ impl App {
         };
         app.lhs_list.state.select(Some(0));
         app
+    }
+
+    pub fn handle_keyboard(&mut self, code: KeyCode) {
+        match code {
+            KeyCode::Enter => (),
+            KeyCode::Left => (),
+            KeyCode::Right => (),
+            KeyCode::Up => self.lhs_list.previous(),
+            KeyCode::Down => self.lhs_list.next(),
+            KeyCode::Delete => (),
+            KeyCode::F(_) => (),
+            KeyCode::Char(_) => (),
+            KeyCode::Esc => todo!(),
+            KeyCode::Modifier(_) => (),
+            _ => (),
+        }
     }
 
     pub fn find_service_templates() -> Vec<(String, String)> {

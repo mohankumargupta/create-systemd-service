@@ -79,11 +79,21 @@ fn start_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Resul
         terminal.draw(|f| ui(f, app))?;
 
         if let Event::Key(key) = event::read()? {
+            if let KeyCode::Char('q') = key.code {
+                return Ok(());
+            } else {
+                app.handle_keyboard(key.code);
+            }
+        }
+
+        /*
+        if let Event::Key(key) = event::read()? {
             match key.code {
                 KeyCode::Char('q') => return Ok(()),
                 _ => {}
             }
         }
+        */
     }
 }
 

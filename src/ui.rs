@@ -100,13 +100,13 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             Block::default()
                 .borders(Borders::ALL)
                 .style(Style::default().fg(Color::White))
-                .title("Copyright")
+                .title("Contents")
                 .border_type(BorderType::Plain),
         );
 
     let pets_chunks = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
+        .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
         .split(chunks[1]);
 
     frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
