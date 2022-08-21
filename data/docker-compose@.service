@@ -1,0 +1,17 @@
+[Unit]
+Description=%i service with docker compose
+Requires=docker.service
+After=docker.service
+[Service]
+WorkingDirectory=/etc/docker/compose/%i
+#User=root
+#Group=root
+# Remove old containers, images and volumes
+ExecStartPre=/usr/bin/sleep 40
+#ExecStartPre=/usr/local/bin/docker-compose rm -fsv
+# Compose up
+ExecStart=/usr/local/bin/docker-compose up
+# Compose down, remove containers and volumes
+ExecStop=/usr/local/bin/docker-compose down
+[Install]
+WantedBy=multi-user.target
