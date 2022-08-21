@@ -8,7 +8,6 @@ WorkingDirectory=/etc/docker/compose/%i
 #Group=root
 # Remove old containers, images and volumes
 ExecStartPre=/usr/bin/sleep 40
-#ExecStartPre=/usr/local/bin/docker-compose rm -fsv
 # Compose up
 ExecStart=/usr/local/bin/docker-compose up
 # Compose down, remove containers and volumes
