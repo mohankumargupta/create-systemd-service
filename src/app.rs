@@ -1,6 +1,6 @@
 use std::fs;
 
-use crossterm::event::KeyCode;
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use directories::ProjectDirs;
 use tui::widgets::ListState;
 
@@ -23,8 +23,14 @@ impl App {
         app
     }
 
-    pub fn handle_keyboard(&mut self, code: KeyCode) {
-        match code {
+    pub fn handle_keyboard(&mut self, key: KeyEvent) {
+        if key.modifiers == KeyModifiers::CONTROL {
+            if let KeyCode::Char(c) = key.code {
+                return;
+            }
+        }
+
+        match key.code {
             KeyCode::Enter => (),
             KeyCode::Left => (),
             KeyCode::Right => (),

@@ -87,7 +87,7 @@ fn start_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Resul
             if let KeyCode::Char('q') = key.code {
                 return Ok(());
             } else {
-                app.handle_keyboard(key.code);
+                app.handle_keyboard(key);
             }
         }
     }
