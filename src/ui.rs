@@ -1,9 +1,9 @@
 use tui::{
     backend::Backend,
-    layout::{Alignment, Constraint, Direction, Layout},
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, List, ListItem, Paragraph, Tabs},
+    widgets::{Block, BorderType, Borders, Clear, List, ListItem, Paragraph, Tabs},
     Frame,
 };
 
@@ -111,7 +111,37 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .split(chunks[1]);
 
     frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
-    if app.app_state == AppState::SelectServiceTemplate {
-        frame.render_widget(systemd_detail, pets_chunks[1]);
+    frame.render_widget(systemd_detail, pets_chunks[1]);
+    if app.app_state == AppState::ChooseServiceName {
+        let block = Block::default().title("Popup").borders(Borders::ALL);
+        let area = centered_rect(60, 20, frame.size());
+        frame.render_widget(Clear, area); //this clears out the background
+        frame.render_widget(block, area);
     }
+}
+
+fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
+    let popup_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_y) / 2),
+                Constraint::Percentage(percent_y),
+                Constraint::Percentage((100 - percent_y) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(r);
+
+    Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_x) / 2),
+                Constraint::Percentage(percent_x),
+                Constraint::Percentage((100 - percent_x) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(popup_layout[1])[1]
 }
