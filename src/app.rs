@@ -15,6 +15,7 @@ pub enum AppState {
 pub struct App {
     pub lhs_list: StatefulList<String>,
     pub app_state: AppState,
+    pub service_name: String,
 }
 
 impl App {
@@ -26,6 +27,7 @@ impl App {
         let mut app = App {
             lhs_list: StatefulList::with_items(templates.clone()),
             app_state: AppState::SelectServiceTemplate,
+            service_name: "".to_string(),
         };
         app.lhs_list.state.select(Some(0));
         app
@@ -34,6 +36,10 @@ impl App {
     pub fn handle_keyboard(&mut self, key: KeyEvent) {
         if key.modifiers == KeyModifiers::CONTROL {
             if let KeyCode::Char(c) = key.code {
+                match c {
+                    'v' => (),
+                    _ => (),
+                }
                 return;
             }
         }
@@ -49,7 +55,17 @@ impl App {
             KeyCode::Down => self.lhs_list.next(),
             KeyCode::Delete => (),
             KeyCode::F(_) => (),
-            KeyCode::Char(_) => (),
+            KeyCode::Char(ch) => match self.app_state {
+                AppState::SelectServiceTemplate => (),
+                AppState::ChooseServiceName => self.service_name.push(ch),
+            },
+            KeyCode::Backspace => match self.app_state {
+                AppState::SelectServiceTemplate => (),
+                AppState::ChooseServiceName => {
+                    self.service_name.pop();
+                    ()
+                }
+            },
             KeyCode::Esc => todo!(),
             KeyCode::Modifier(_) => (),
             _ => (),

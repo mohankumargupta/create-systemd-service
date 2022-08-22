@@ -112,11 +112,20 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
 
     frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
     frame.render_widget(systemd_detail, pets_chunks[1]);
+
+    let input = Paragraph::new(app.service_name.as_ref())
+        .style(Style::default().fg(Color::White))
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_style(Style::default().fg(Color::Yellow))
+                .title("Name of Service"),
+        );
+
     if app.app_state == AppState::ChooseServiceName {
-        let block = Block::default().title("Popup").borders(Borders::ALL);
-        let area = centered_rect(60, 20, frame.size());
+        let area = centered_rect(60, 15, frame.size());
         frame.render_widget(Clear, area); //this clears out the background
-        frame.render_widget(block, area);
+        frame.render_widget(input, area);
     }
 }
 
