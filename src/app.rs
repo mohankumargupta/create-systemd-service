@@ -59,14 +59,17 @@ impl App {
                 AppState::SelectServiceTemplate => (),
                 AppState::ChooseServiceName => self.service_name.push(ch),
             },
-            KeyCode::Backspace => match self.app_state {
-                AppState::SelectServiceTemplate => (),
-                AppState::ChooseServiceName => {
+            KeyCode::Backspace => {
+                if let AppState::ChooseServiceName = self.app_state {
                     self.service_name.pop();
-                    ()
                 }
-            },
-            KeyCode::Esc => todo!(),
+            }
+            KeyCode::Esc => {
+                if let AppState::ChooseServiceName = self.app_state {
+                    self.app_state = AppState::SelectServiceTemplate;
+                    self.service_name.clear();
+                }
+            }
             KeyCode::Modifier(_) => (),
             _ => (),
         }
