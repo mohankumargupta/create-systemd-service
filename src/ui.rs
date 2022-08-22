@@ -7,7 +7,7 @@ use tui::{
     Frame,
 };
 
-use crate::app::App;
+use crate::app::{App, AppState};
 
 pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     let size = frame.size();
@@ -93,8 +93,9 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .items
         .get(app.lhs_list.state.selected().unwrap())
         .unwrap();
+
     let systemd_detail = Paragraph::new(template_contents.clone())
-        .style(Style::default().fg(Color::LightCyan))
+        .style(Style::default().fg(Color::White))
         .alignment(Alignment::Left)
         .block(
             Block::default()
@@ -110,5 +111,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .split(chunks[1]);
 
     frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
-    frame.render_widget(systemd_detail, pets_chunks[1]);
+    if app.app_state == AppState::SelectServiceTemplate {
+        frame.render_widget(systemd_detail, pets_chunks[1]);
+    }
 }

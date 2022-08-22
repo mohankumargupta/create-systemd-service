@@ -6,8 +6,15 @@ use tui::widgets::ListState;
 
 use crate::statefullist::StatefulList;
 
+#[derive(PartialEq)]
+pub enum AppState {
+    SelectServiceTemplate,
+    ChooseServiceName,
+}
+
 pub struct App {
     pub lhs_list: StatefulList<String>,
+    pub app_state: AppState,
 }
 
 impl App {
@@ -18,6 +25,7 @@ impl App {
 
         let mut app = App {
             lhs_list: StatefulList::with_items(templates.clone()),
+            app_state: AppState::SelectServiceTemplate,
         };
         app.lhs_list.state.select(Some(0));
         app
@@ -31,7 +39,10 @@ impl App {
         }
 
         match key.code {
-            KeyCode::Enter => (),
+            KeyCode::Enter => match self.app_state {
+                AppState::SelectServiceTemplate => self.app_state = AppState::ChooseServiceName,
+                AppState::ChooseServiceName => (),
+            },
             KeyCode::Left => (),
             KeyCode::Right => (),
             KeyCode::Up => self.lhs_list.previous(),

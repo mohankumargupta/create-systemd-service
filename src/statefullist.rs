@@ -22,9 +22,11 @@ impl<T> StatefulList<T> {
     }
 
     /// Returns the selected item.
-    pub fn selected(&self) -> Option<&(T, T)> {
+    /*
+    fn selected(&self) -> Option<&(T, T)> {
         self.items.get(self.state.selected()?)
     }
+    */
 
     /// Selects the next item.
     pub fn next(&mut self) {
