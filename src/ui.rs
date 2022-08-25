@@ -7,7 +7,10 @@ use tui::{
     Frame,
 };
 
-use crate::app::{App, AppState};
+use crate::{
+    app::{App, AppState},
+    syntax::SyntaxText,
+};
 
 pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     let size = frame.size();
@@ -94,7 +97,9 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .get(app.lhs_list.state.selected().unwrap())
         .unwrap();
 
-    let systemd_detail = Paragraph::new(template_contents.clone())
+    let styled_contents = SyntaxText::new(&template_contents);
+
+    let systemd_detail = Paragraph::new(styled_contents.convert())
         .style(Style::default().fg(Color::White))
         .alignment(Alignment::Left)
         .block(
@@ -110,8 +115,9 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
         .split(chunks[1]);
 
-    frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
+    frame.render_widget(Clear, pets_chunks[1]);
     frame.render_widget(systemd_detail, pets_chunks[1]);
+    frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
 
     let input = Paragraph::new(app.service_name.as_ref())
         .style(Style::default().fg(Color::White))

@@ -1,5 +1,6 @@
 mod app;
 mod statefullist;
+mod syntax;
 mod ui;
 
 use app::App;
@@ -19,6 +20,7 @@ use std::error::Error;
 use std::io;
 use std::path::PathBuf;
 use std::process::exit;
+use std::time::Duration;
 
 use tui::backend::{Backend, CrosstermBackend};
 use tui::Terminal;
@@ -90,6 +92,8 @@ fn start_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Resul
                 app.handle_keyboard(key);
             }
         }
+
+        std::thread::sleep(Duration::from_secs(1));
     }
 }
 
