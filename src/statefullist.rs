@@ -13,6 +13,7 @@ impl<T> StatefulList<T> {
     /// Constructs a new instance of `StatefulList`.
     pub fn new(items: Vec<(T, T)>, mut state: ListState) -> StatefulList<T> {
         state.select(Some(0));
+        //state.select(None);
         Self { items, state }
     }
 
