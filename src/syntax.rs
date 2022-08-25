@@ -5,7 +5,10 @@ use syntect::{
     util::{self, LinesWithEndings},
     Error,
 };
-use tui::text::{Span, Spans};
+use tui::{
+    style::Color,
+    text::{Span, Spans},
+};
 
 /*
 struct SyntaxLine {
@@ -26,6 +29,7 @@ pub struct SyntaxLine<'a> {
 pub struct SyntaxText<'a> {
     pub text: &'a String,
     pub lines: Vec<SyntaxLine<'a>>,
+    pub highlighted_index: Option<usize>,
 }
 
 impl<'a> SyntaxText<'a> {
@@ -73,6 +77,7 @@ impl<'a> SyntaxText<'a> {
         Self {
             text: text,
             lines: syntax_lines.clone(),
+            highlighted_index: Some(0),
         }
     }
 
@@ -94,12 +99,19 @@ impl<'a> SyntaxText<'a> {
     pub fn convert(&self) -> tui::text::Text<'_> {
         let mut result_lines: Vec<Spans> = Vec::with_capacity(self.lines.len());
 
-        for (syntax_line, _) in self.lines.iter().zip(self.text.lines()) {
+        for (index, (syntax_line, _line_content)) in
+            self.lines.iter().zip(self.text.lines()).enumerate()
+        {
             let mut line_span = Spans(Vec::with_capacity(syntax_line.items.len()));
 
             for (style, item_content) in &syntax_line.items {
                 //let item_content = &line_content[range.clone()];
-                let item_style = syntact_style_to_tui(style);
+                let mut item_style = syntact_style_to_tui(style);
+                if let Some(highlighted_index) = self.highlighted_index {
+                    if index == highlighted_index {
+                        item_style = item_style.patch(tui::style::Style::default().bg(Color::Red));
+                    }
+                }
 
                 line_span.0.push(Span::styled(*item_content, item_style));
             }

@@ -3,7 +3,7 @@ use tui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, Clear, List, ListItem, Paragraph, Tabs},
+    widgets::{Block, BorderType, Borders, Clear, List, ListItem, Paragraph, Tabs, Wrap},
     Frame,
 };
 
@@ -102,6 +102,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     let systemd_detail = Paragraph::new(styled_contents.convert())
         .style(Style::default().fg(Color::White))
         .alignment(Alignment::Left)
+        .wrap(Wrap { trim: false })
         .block(
             Block::default()
                 .borders(Borders::ALL)
