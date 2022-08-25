@@ -91,7 +91,7 @@ impl App {
                 }
             }
         }
-
+        v1.sort_by_key(|f| f.0.clone());
         v1
     }
 }

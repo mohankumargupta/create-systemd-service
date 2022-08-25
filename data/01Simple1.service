@@ -4,7 +4,7 @@ After=
 Wants=
 
 [Service]
-ExecStart=/bin/true
+User=root
 
 [Install]
 WantedBy=multi-user.target
