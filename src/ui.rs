@@ -3,7 +3,7 @@ use tui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, Clear, List, ListItem, Paragraph, Tabs, Wrap},
+    widgets::{Block, BorderType, Borders, Clear, List, ListItem, Paragraph, Tabs},
     Frame,
 };
 
@@ -90,14 +90,6 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             .fg(Color::Black)
             .add_modifier(Modifier::BOLD),
     );
-    /*
-    let list = List::new(items).block(templates_block).highlight_style(
-        Style::default()
-            .bg(Color::Black)
-            .fg(Color::White)
-            .add_modifier(Modifier::BOLD),
-    );
-    */
 
     let &(_, template_contents) = &app
         .lhs_list
@@ -107,6 +99,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
 
     let styled_contents = SyntaxText::new(&template_contents);
 
+    /*
     let systemd_detail = Paragraph::new(styled_contents.convert())
         .style(Style::default().fg(Color::White))
         .alignment(Alignment::Left)
@@ -118,6 +111,9 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                 .title("Contents")
                 .border_type(BorderType::Plain),
         );
+    */
+
+    let systemd_detail = List::from(styled_contents);
 
     let pets_chunks = Layout::default()
         .direction(Direction::Horizontal)

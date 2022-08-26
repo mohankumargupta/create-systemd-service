@@ -7,7 +7,8 @@ use syntect::{
 };
 use tui::{
     style::Color,
-    text::{Span, Spans},
+    text::{Span, Spans, Text},
+    widgets::{List, ListItem},
 };
 
 /*
@@ -77,7 +78,7 @@ impl<'a> SyntaxText<'a> {
         Self {
             text: text,
             lines: syntax_lines.clone(),
-            highlighted_index: Some(0),
+            highlighted_index: Some(1),
         }
     }
 
@@ -120,6 +121,33 @@ impl<'a> SyntaxText<'a> {
         }
 
         result_lines.into()
+    }
+}
+
+impl<'a> From<SyntaxText<'a>> for List<'a> {
+    fn from(v: SyntaxText<'a>) -> Self {
+        let mut result_lines: Vec<ListItem> = Vec::with_capacity(v.lines.len());
+
+        for (index, (syntax_line, _line_content)) in v.lines.iter().zip(v.text.lines()).enumerate()
+        {
+            let mut line_span = Spans(Vec::with_capacity(syntax_line.items.len()));
+
+            for (style, item_content) in &syntax_line.items {
+                //let item_content = &line_content[range.clone()];
+                let mut item_style = syntact_style_to_tui(style);
+                if let Some(highlighted_index) = v.highlighted_index {
+                    if index == highlighted_index {
+                        item_style = item_style.patch(tui::style::Style::default().bg(Color::Red));
+                    }
+                }
+
+                line_span.0.push(Span::styled(*item_content, item_style));
+            }
+
+            result_lines.push(ListItem::new(Text::from(line_span)));
+        }
+
+        List::new(result_lines)
     }
 }
 
