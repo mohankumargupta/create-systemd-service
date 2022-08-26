@@ -14,6 +14,7 @@ pub enum AppState {
 
 pub struct App {
     pub lhs_list: StatefulList<String>,
+    pub rhs_list_state: ListState,
     pub app_state: AppState,
     pub service_name: String,
 }
@@ -26,10 +27,12 @@ impl App {
 
         let mut app = App {
             lhs_list: StatefulList::with_items(templates.clone()),
+            rhs_list_state: ListState::default(),
             app_state: AppState::SelectServiceTemplate,
             service_name: "".to_string(),
         };
         app.lhs_list.state.select(Some(0));
+        app.rhs_list_state.select(Some(0));
         app
     }
 

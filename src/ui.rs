@@ -122,7 +122,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .split(chunks[1]);
 
     frame.render_widget(Clear, pets_chunks[1]);
-    frame.render_widget(systemd_detail, pets_chunks[1]);
+    frame.render_stateful_widget(systemd_detail, pets_chunks[1], &mut app.rhs_list_state);
     frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
 
     let input = Paragraph::new(app.service_name.as_ref())
