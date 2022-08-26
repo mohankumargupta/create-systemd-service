@@ -6,7 +6,6 @@ use syntect::{
     Error,
 };
 use tui::{
-    style::Color,
     text::{Span, Spans, Text},
     widgets::{List, ListItem},
 };
@@ -30,7 +29,6 @@ pub struct SyntaxLine<'a> {
 pub struct SyntaxText<'a> {
     pub text: &'a String,
     pub lines: Vec<SyntaxLine<'a>>,
-    pub highlighted_index: Option<usize>,
 }
 
 impl<'a> SyntaxText<'a> {
@@ -52,7 +50,6 @@ impl<'a> SyntaxText<'a> {
         //let highlighter = Highlighter::new(&theme_set.themes["monokai"]);
         //let mut highlight_state = HighlightState::new(&highlighter, ScopeStack::new());
 
-        //let syntax = syntax_set.find_syntax_by_extension("ini").unwrap();
         let syntax = syntax_set.find_syntax_by_extension("ini").unwrap();
         let mut h = HighlightLines::new(syntax, &theme_set.themes["monokai"]);
 
@@ -76,9 +73,8 @@ impl<'a> SyntaxText<'a> {
             */
         }
         Self {
-            text: text,
+            text,
             lines: syntax_lines.clone(),
-            highlighted_index: Some(1),
         }
     }
 
@@ -96,66 +92,13 @@ impl<'a> SyntaxText<'a> {
         let iter = HighlightIterator::new(highlight_state, &ops[..], line, &highlighter);
         Ok(iter.collect())
     }
-
-    pub fn convert(&self) -> tui::text::Text<'_> {
-        let mut result_lines: Vec<Spans> = Vec::with_capacity(self.lines.len());
-
-        for (index, (syntax_line, _line_content)) in
-            self.lines.iter().zip(self.text.lines()).enumerate()
-        {
-            let mut line_span = Spans(Vec::with_capacity(syntax_line.items.len()));
-
-            for (style, item_content) in &syntax_line.items {
-                //let item_content = &line_content[range.clone()];
-                let mut item_style = syntact_style_to_tui(style);
-                if let Some(highlighted_index) = self.highlighted_index {
-                    if index == highlighted_index {
-                        item_style = item_style.patch(tui::style::Style::default().bg(Color::Red));
-                    }
-                }
-
-                line_span.0.push(Span::styled(*item_content, item_style));
-            }
-
-            result_lines.push(line_span);
-        }
-
-        result_lines.into()
-    }
 }
 
 impl<'a> From<SyntaxText<'a>> for List<'a> {
     fn from(v: SyntaxText<'a>) -> Self {
         let mut result_lines: Vec<ListItem> = Vec::with_capacity(v.lines.len());
 
-        for (index, (syntax_line, _line_content)) in v.lines.iter().zip(v.text.lines()).enumerate()
-        {
-            let mut line_span = Spans(Vec::with_capacity(syntax_line.items.len()));
-
-            for (style, item_content) in &syntax_line.items {
-                //let item_content = &line_content[range.clone()];
-                let mut item_style = syntact_style_to_tui(style);
-                if let Some(highlighted_index) = v.highlighted_index {
-                    if index == highlighted_index {
-                        item_style = item_style.patch(tui::style::Style::default().bg(Color::Red));
-                    }
-                }
-
-                line_span.0.push(Span::styled(*item_content, item_style));
-            }
-
-            result_lines.push(ListItem::new(Text::from(line_span)));
-        }
-
-        List::new(result_lines)
-    }
-}
-
-impl<'a> From<SyntaxText<'a>> for tui::text::Text<'a> {
-    fn from(v: SyntaxText<'a>) -> Self {
-        let mut result_lines: Vec<Spans> = Vec::with_capacity(v.lines.len());
-
-        for (syntax_line, _) in v.lines.iter().zip(v.text.lines()) {
+        for (syntax_line, _line_content) in v.lines.iter().zip(v.text.lines()) {
             let mut line_span = Spans(Vec::with_capacity(syntax_line.items.len()));
 
             for (style, item_content) in &syntax_line.items {
@@ -164,10 +107,10 @@ impl<'a> From<SyntaxText<'a>> for tui::text::Text<'a> {
                 line_span.0.push(Span::styled(*item_content, item_style));
             }
 
-            result_lines.push(line_span);
+            result_lines.push(ListItem::new(Text::from(line_span)));
         }
 
-        result_lines.into()
+        List::new(result_lines)
     }
 }
 
@@ -190,12 +133,3 @@ fn syntact_style_to_tui(style: &Style) -> tui::style::Style {
 
     res
 }
-
-/*
-    let items = [ListItem::new("Item 1"), ListItem::new("Item 2"), ListItem::new("Item 3")];
-    List::new(items)
-     .block(Block::default().title("List").borders(Borders::ALL))
-     .style(Style::default().fg(Color::White))
-     .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
-     .highlight_symbol(">>");
-*/
