@@ -99,20 +99,6 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
 
     let styled_contents = SyntaxText::new(&template_contents);
 
-    /*
-    let systemd_detail = Paragraph::new(styled_contents.convert())
-        .style(Style::default().fg(Color::White))
-        .alignment(Alignment::Left)
-        .wrap(Wrap { trim: false })
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .style(Style::default().fg(Color::White))
-                .title("Contents")
-                .border_type(BorderType::Plain),
-        );
-    */
-
     let systemd_detail =
         List::from(styled_contents).highlight_style(Style::default().bg(Color::Rgb(117, 113, 94)));
 
