@@ -90,6 +90,14 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             .fg(Color::Black)
             .add_modifier(Modifier::BOLD),
     );
+    /*
+    let list = List::new(items).block(templates_block).highlight_style(
+        Style::default()
+            .bg(Color::Black)
+            .fg(Color::White)
+            .add_modifier(Modifier::BOLD),
+    );
+    */
 
     let &(_, template_contents) = &app
         .lhs_list
