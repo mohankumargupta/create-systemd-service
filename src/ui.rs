@@ -113,7 +113,8 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         );
     */
 
-    let systemd_detail = List::from(styled_contents);
+    let systemd_detail =
+        List::from(styled_contents).highlight_style(Style::default().bg(Color::Rgb(117, 113, 94)));
 
     let pets_chunks = Layout::default()
         .direction(Direction::Horizontal)
