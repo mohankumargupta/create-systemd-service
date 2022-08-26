@@ -32,7 +32,7 @@ impl App {
             service_name: "".to_string(),
         };
         app.lhs_list.state.select(Some(0));
-        app.rhs_list_state.select(Some(0));
+        //app.rhs_list_state.select(Some(0));
         app
     }
 
