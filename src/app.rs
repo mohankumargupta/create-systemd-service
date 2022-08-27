@@ -121,5 +121,8 @@ impl<'a> App<'a> {
         v1
     }
 
-    fn initialise_edit(&self) {}
+    fn initialise_edit(&mut self) {
+        self.app_state = AppState::EditService;
+        self.lhs_list.items.clear();
+    }
 }

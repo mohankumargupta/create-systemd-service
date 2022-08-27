@@ -66,64 +66,69 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     frame.render_widget(tabs, chunks[0]);
     frame.render_widget(copyright, chunks[2]);
 
-    let templates_block = Block::default()
-        .borders(Borders::ALL)
-        .style(Style::default().fg(Color::White))
-        .title("Select a template")
-        .border_type(BorderType::Plain);
-
-    let items: Vec<_> = app
-        .lhs_list
-        .items
-        .iter()
-        .map(|(template, _)| {
-            ListItem::new(Spans::from(vec![Span::styled(
-                template.clone(),
-                Style::default(),
-            )]))
-        })
-        .collect();
-
-    let list = List::new(items).block(templates_block).highlight_style(
-        Style::default()
-            .bg(Color::Yellow)
-            .fg(Color::Black)
-            .add_modifier(Modifier::BOLD),
-    );
-
-    let &(_, template_contents) = &app
-        .lhs_list
-        .items
-        .get(app.lhs_list.state.selected().unwrap())
-        .unwrap();
-
-    let styled_contents = SyntaxText::new(&template_contents);
-
-    let systemd_detail =
-        List::from(styled_contents).highlight_style(Style::default().bg(Color::Rgb(117, 113, 94)));
-
-    let pets_chunks = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
-        .split(chunks[1]);
-
-    frame.render_widget(Clear, pets_chunks[1]);
-    frame.render_stateful_widget(systemd_detail, pets_chunks[1], &mut app.rhs_list_state);
-    frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
-
-    let input = Paragraph::new(app.service_name.as_ref())
-        .style(Style::default().fg(Color::White))
-        .block(
-            Block::default()
+    match app.app_state {
+        AppState::SelectServiceTemplate | AppState::ChooseServiceName => {
+            let templates_block = Block::default()
                 .borders(Borders::ALL)
-                .border_style(Style::default().fg(Color::Yellow))
-                .title("Name of Service"),
-        );
+                .style(Style::default().fg(Color::White))
+                .title("Select a template")
+                .border_type(BorderType::Plain);
 
-    if app.app_state == AppState::ChooseServiceName {
-        let area = centered_rect(60, 15, frame.size());
-        frame.render_widget(Clear, area); //this clears out the background
-        frame.render_widget(input, area);
+            let items: Vec<_> = app
+                .lhs_list
+                .items
+                .iter()
+                .map(|(template, _)| {
+                    ListItem::new(Spans::from(vec![Span::styled(
+                        template.clone(),
+                        Style::default(),
+                    )]))
+                })
+                .collect();
+
+            let list = List::new(items).block(templates_block).highlight_style(
+                Style::default()
+                    .bg(Color::Yellow)
+                    .fg(Color::Black)
+                    .add_modifier(Modifier::BOLD),
+            );
+
+            let &(_, template_contents) = &app
+                .lhs_list
+                .items
+                .get(app.lhs_list.state.selected().unwrap())
+                .unwrap();
+
+            let styled_contents = SyntaxText::new(&template_contents);
+
+            let systemd_detail = List::from(styled_contents)
+                .highlight_style(Style::default().bg(Color::Rgb(117, 113, 94)));
+
+            let pets_chunks = Layout::default()
+                .direction(Direction::Horizontal)
+                .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
+                .split(chunks[1]);
+
+            frame.render_widget(Clear, pets_chunks[1]);
+            frame.render_stateful_widget(systemd_detail, pets_chunks[1], &mut app.rhs_list_state);
+            frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
+
+            let input = Paragraph::new(app.service_name.as_ref())
+                .style(Style::default().fg(Color::White))
+                .block(
+                    Block::default()
+                        .borders(Borders::ALL)
+                        .border_style(Style::default().fg(Color::Yellow))
+                        .title("Name of Service"),
+                );
+
+            if app.app_state == AppState::ChooseServiceName {
+                let area = centered_rect(60, 15, frame.size());
+                frame.render_widget(Clear, area); //this clears out the background
+                frame.render_widget(input, area);
+            }
+        }
+        AppState::EditService => (),
     }
 }
 
