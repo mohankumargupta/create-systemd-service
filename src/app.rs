@@ -2,24 +2,26 @@ use std::fs;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use directories::ProjectDirs;
-use tui::widgets::ListState;
+use tui::widgets::{ListItem, ListState};
 
-use crate::statefullist::StatefulList;
+use crate::{editinglist::EditingList, statefullist::StatefulList};
 
 #[derive(PartialEq)]
 pub enum AppState {
     SelectServiceTemplate,
     ChooseServiceName,
+    EditService,
 }
 
-pub struct App {
+pub struct App<'a> {
     pub lhs_list: StatefulList<String>,
     pub rhs_list_state: ListState,
     pub app_state: AppState,
     pub service_name: String,
+    pub editing_service: Option<EditingList<Vec<ListItem<'a>>>>,
 }
 
-impl App {
+impl<'a> App<'a> {
     pub fn new() -> Self {
         let templates = Self::find_service_templates();
         let mut lhs_list_state = ListState::default();
@@ -30,37 +32,56 @@ impl App {
             rhs_list_state: ListState::default(),
             app_state: AppState::SelectServiceTemplate,
             service_name: "".to_string(),
+            editing_service: None,
         };
         app.lhs_list.state.select(Some(0));
         //app.rhs_list_state.select(Some(0));
         app
     }
 
-    pub fn handle_keyboard(&mut self, key: KeyEvent) {
+    pub fn handle_keyboard(&mut self, key: KeyEvent) -> bool {
         if key.modifiers == KeyModifiers::CONTROL {
             if let KeyCode::Char(c) = key.code {
                 match c {
-                    'v' => (),
+                    'v' => return false,
                     _ => (),
                 }
-                return;
             }
         }
+
+        let returncode = true;
 
         match key.code {
             KeyCode::Enter => match self.app_state {
                 AppState::SelectServiceTemplate => self.app_state = AppState::ChooseServiceName,
-                AppState::ChooseServiceName => (),
+                AppState::ChooseServiceName => {
+                    self.app_state = AppState::EditService;
+                    self.initialise_edit();
+                }
+                AppState::EditService => (),
             },
             KeyCode::Left => (),
             KeyCode::Right => (),
-            KeyCode::Up => self.lhs_list.previous(),
-            KeyCode::Down => self.lhs_list.next(),
+            KeyCode::Up => match self.app_state {
+                AppState::SelectServiceTemplate => self.lhs_list.previous(),
+                AppState::ChooseServiceName => (),
+                AppState::EditService => (),
+            },
+            KeyCode::Down => match self.app_state {
+                AppState::SelectServiceTemplate => self.lhs_list.next(),
+                AppState::ChooseServiceName => (),
+                AppState::EditService => (),
+            },
             KeyCode::Delete => (),
             KeyCode::F(_) => (),
             KeyCode::Char(ch) => match self.app_state {
-                AppState::SelectServiceTemplate => (),
+                AppState::SelectServiceTemplate => {
+                    if ch == 'q' {
+                        return false;
+                    }
+                }
                 AppState::ChooseServiceName => self.service_name.push(ch),
+                AppState::EditService => (),
             },
             KeyCode::Backspace => {
                 if let AppState::ChooseServiceName = self.app_state {
@@ -76,6 +97,8 @@ impl App {
             KeyCode::Modifier(_) => (),
             _ => (),
         }
+
+        returncode
     }
 
     pub fn find_service_templates() -> Vec<(String, String)> {
@@ -97,4 +120,6 @@ impl App {
         v1.sort_by_key(|f| f.0.clone());
         v1
     }
+
+    fn initialise_edit(&self) {}
 }

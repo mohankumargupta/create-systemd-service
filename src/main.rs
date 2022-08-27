@@ -1,4 +1,5 @@
 mod app;
+mod editinglist;
 mod statefullist;
 mod syntax;
 mod ui;
@@ -84,11 +85,8 @@ fn start_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Resul
                 if let KeyCode::Char('x') = key.code {
                     return Ok(());
                 }
-            }
-            if let KeyCode::Char('q') = key.code {
+            } else if !app.handle_keyboard(key) {
                 return Ok(());
-            } else {
-                app.handle_keyboard(key);
             }
         }
     }
