@@ -161,6 +161,21 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         }
         AppState::EnteringEditMode => {
             app.initialise_edit();
+
+            let moo_chunks = Layout::default()
+                .direction(Direction::Horizontal)
+                .constraints([Constraint::Percentage(100)].as_ref())
+                .split(chunks[1]);
+            let input2 = Paragraph::new(app.editing_text.as_ref())
+                .style(Style::default().fg(Color::White))
+                .block(
+                    Block::default()
+                        .borders(Borders::ALL)
+                        .border_style(Style::default().fg(Color::Yellow))
+                        .title("Name of Service"),
+                );
+            frame.render_widget(Clear, chunks[1]);
+            frame.render_widget(input2, chunks[1]);
         }
     }
 }
