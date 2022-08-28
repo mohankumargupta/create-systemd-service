@@ -2,7 +2,7 @@ use std::fs;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use directories::ProjectDirs;
-use tui::{text::Spans, widgets::ListState};
+use tui::widgets::ListState;
 
 use crate::{editinglist::EditingList, statefullist::StatefulList};
 
@@ -139,7 +139,9 @@ impl<'a> App<'a> {
         //self.lhs_list.items.clear();
     }
 
+    /*
     pub fn setEditingText(&mut self, content: String) {
         self.editing_text = content;
     }
+    */
 }
