@@ -128,21 +128,12 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                 frame.render_widget(input, area);
             }
         }
-        AppState::EditService => {
-            let input2 = Paragraph::new(app.editing_text.as_ref())
-                .style(Style::default().fg(Color::White))
-                .block(
-                    Block::default()
-                        .borders(Borders::ALL)
-                        .border_style(Style::default().fg(Color::Yellow))
-                        .title("Name of Service"),
-                );
-            frame.render_widget(Clear, chunks[1]);
-            frame.render_widget(input2, chunks[1]);
-        }
-        AppState::EnteringEditMode => {
-            app.initialise_edit();
+        AppState::EditService => (),
+        AppState::EnteringEditMode => app.initialise_edit(),
+    }
 
+    match app.app_state {
+        AppState::EnteringEditMode | AppState::EditService => {
             let input2 = Paragraph::new(app.editing_text.as_ref())
                 .style(Style::default().fg(Color::White))
                 .block(
@@ -154,6 +145,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             frame.render_widget(Clear, chunks[1]);
             frame.render_widget(input2, chunks[1]);
         }
+        _ => (),
     }
 }
 
