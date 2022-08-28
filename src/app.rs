@@ -136,7 +136,7 @@ impl<'a> App<'a> {
         self.editing_text = qoo;
 
         self.app_state = AppState::EditService;
-        self.lhs_list.items.clear();
+        //self.lhs_list.items.clear();
     }
 
     pub fn setEditingText(&mut self, content: String) {
