@@ -156,6 +156,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                         .border_style(Style::default().fg(Color::Yellow))
                         .title("Name of Service"),
                 );
+            frame.render_widget(Clear, chunks[1]);
             frame.render_widget(input2, chunks[1]);
         }
         AppState::EnteringEditMode => {
