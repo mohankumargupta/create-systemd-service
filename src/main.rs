@@ -24,6 +24,7 @@ use std::error::Error;
 use std::io;
 use std::path::PathBuf;
 use std::process::exit;
+use std::thread::sleep_ms;
 
 use tui::backend::{Backend, CrosstermBackend};
 use tui::text::Text;

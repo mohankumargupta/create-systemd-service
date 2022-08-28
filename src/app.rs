@@ -20,6 +20,7 @@ pub struct App<'a> {
     pub app_state: AppState,
     pub service_name: String,
     pub editing_service: Option<EditingList<'a>>,
+    pub editing_text: String,
 }
 
 impl<'a> App<'a> {
@@ -34,6 +35,7 @@ impl<'a> App<'a> {
             app_state: AppState::SelectServiceTemplate,
             service_name: "".to_string(),
             editing_service: None,
+            editing_text: "".to_string(),
         };
         app.lhs_list.state.select(Some(0));
         //app.rhs_list_state.select(Some(0));
@@ -126,9 +128,18 @@ impl<'a> App<'a> {
         v1
     }
 
-    pub fn initialise_edit(&mut self, content: Option<EditingList<'a>>) {
-        self.editing_service = content;
+    pub fn initialise_edit(&mut self) {
+        let boo = &self.lhs_list.items;
+        let index = self.lhs_list.state.selected().unwrap();
+        let moo = boo.get(index);
+        let qoo = moo.unwrap().1.to_string();
+        self.editing_text = qoo;
+
         self.app_state = AppState::EditService;
         self.lhs_list.items.clear();
+    }
+
+    pub fn setEditingText(&mut self, content: String) {
+        self.editing_text = content;
     }
 }
