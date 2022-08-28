@@ -9,11 +9,26 @@ use tui::{
 
 use crate::{
     app::{App, AppState},
+    editinglist::EditingList,
     syntax::SyntaxText,
 };
 
 pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     let size = frame.size();
+
+    /*
+    let &(_, template_contents_2) = &app
+        .lhs_list
+        .items
+        .get(app.lhs_list.state.selected().unwrap())
+        .unwrap();
+
+    let styled_contents_2 = SyntaxText::new(&template_contents_2);
+    let mut editing_content_2: Vec<Spans> = styled_contents_2.into();
+    let edit_2 = Some(EditingList::with_items(editing_content_2.clone()));
+
+    app.initialise_edit(edit_2);
+    */
 
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -129,6 +144,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             }
         }
         AppState::EditService => (),
+        AppState::EnteringEditMode => {}
     }
 }
 

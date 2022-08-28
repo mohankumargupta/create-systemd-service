@@ -114,6 +114,26 @@ impl<'a> From<SyntaxText<'a>> for List<'a> {
     }
 }
 
+impl<'a> From<SyntaxText<'a>> for Vec<Spans<'a>> {
+    fn from(v: SyntaxText<'a>) -> Self {
+        let mut result_lines: Vec<Spans<'a>> = Vec::with_capacity(v.lines.len());
+
+        for (syntax_line, _line_content) in v.lines.iter().zip(v.text.lines()) {
+            let mut line_span = Spans(Vec::with_capacity(syntax_line.items.len()));
+
+            for (style, item_content) in &syntax_line.items {
+                //let item_content = &line_content[range.clone()];
+                let item_style = syntact_style_to_tui(style);
+                line_span.0.push(Span::styled(*item_content, item_style));
+            }
+
+            result_lines.push(line_span);
+        }
+
+        result_lines
+    }
+}
+
 fn syntact_style_to_tui(style: &Style) -> tui::style::Style {
     let mut res = tui::style::Style::default().fg(tui::style::Color::Rgb(
         style.foreground.r,

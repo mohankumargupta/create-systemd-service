@@ -1,30 +1,30 @@
-use tui::widgets::ListState;
+use tui::{text::Spans, widgets::ListState};
 
 /// List widget with TUI controlled states.
 #[derive(Debug)]
-pub struct EditingList<T> {
+pub struct EditingList<'a> {
     /// List items (states).
-    pub items: Vec<T>,
+    pub items: Vec<Spans<'a>>,
     /// State that can be modified by TUI.
     pub state: ListState,
 }
 
-impl<T> EditingList<T> {
+impl<'a> EditingList<'a> {
     /// Constructs a new instance of `StatefulList`.
-    pub fn new(items: Vec<T>, mut state: ListState) -> EditingList<T> {
+    pub fn new(items: Vec<Spans<'a>>, mut state: ListState) -> EditingList<'a> {
         state.select(Some(0));
         //state.select(None);
         Self { items, state }
     }
 
     /// Construct a new `StatefulList` with given items.
-    pub fn with_items(items: Vec<T>) -> EditingList<T> {
+    pub fn with_items(items: Vec<Spans<'a>>) -> EditingList<'a> {
         Self::new(items, ListState::default())
     }
 
     /// Returns the selected item.
 
-    fn selected(&self) -> Option<&T> {
+    fn selected(&self) -> Option<&Spans<'a>> {
         self.items.get(self.state.selected()?)
     }
 

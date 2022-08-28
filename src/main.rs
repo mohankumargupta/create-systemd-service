@@ -5,6 +5,9 @@ mod syntax;
 mod ui;
 
 use app::App;
+use editinglist::EditingList;
+use syntax::SyntaxText;
+use tui::text::Spans;
 use ui::ui;
 
 use crossterm::event::{self, KeyModifiers};
@@ -23,6 +26,7 @@ use std::path::PathBuf;
 use std::process::exit;
 
 use tui::backend::{Backend, CrosstermBackend};
+use tui::text::Text;
 use tui::Terminal;
 
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
@@ -76,9 +80,11 @@ fn prerequisites() {
     }
 }
 
-fn start_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
+fn start_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<()> {
+    let mut app = App::new();
+
     loop {
-        terminal.draw(|f| ui(f, app))?;
+        terminal.draw(|f| ui(f, &mut app))?;
 
         if let Event::Key(key) = event::read()? {
             if key.modifiers == KeyModifiers::CONTROL {
@@ -129,8 +135,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    let mut app = App::new();
-    let res = start_app(&mut terminal, &mut app);
+    let res = start_app(&mut terminal);
 
     // restore terminal
     disable_raw_mode()?;

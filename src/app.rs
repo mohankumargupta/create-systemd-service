@@ -2,7 +2,7 @@ use std::fs;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use directories::ProjectDirs;
-use tui::widgets::{ListItem, ListState};
+use tui::{text::Spans, widgets::ListState};
 
 use crate::{editinglist::EditingList, statefullist::StatefulList};
 
@@ -10,6 +10,7 @@ use crate::{editinglist::EditingList, statefullist::StatefulList};
 pub enum AppState {
     SelectServiceTemplate,
     ChooseServiceName,
+    EnteringEditMode,
     EditService,
 }
 
@@ -18,7 +19,7 @@ pub struct App<'a> {
     pub rhs_list_state: ListState,
     pub app_state: AppState,
     pub service_name: String,
-    pub editing_service: Option<EditingList<Vec<ListItem<'a>>>>,
+    pub editing_service: Option<EditingList<'a>>,
 }
 
 impl<'a> App<'a> {
@@ -55,10 +56,11 @@ impl<'a> App<'a> {
             KeyCode::Enter => match self.app_state {
                 AppState::SelectServiceTemplate => self.app_state = AppState::ChooseServiceName,
                 AppState::ChooseServiceName => {
-                    self.app_state = AppState::EditService;
-                    self.initialise_edit();
+                    self.app_state = AppState::EnteringEditMode;
+                    //self.initialise_edit();
                 }
                 AppState::EditService => (),
+                AppState::EnteringEditMode => (),
             },
             KeyCode::Left => (),
             KeyCode::Right => (),
@@ -66,11 +68,13 @@ impl<'a> App<'a> {
                 AppState::SelectServiceTemplate => self.lhs_list.previous(),
                 AppState::ChooseServiceName => (),
                 AppState::EditService => (),
+                AppState::EnteringEditMode => (),
             },
             KeyCode::Down => match self.app_state {
                 AppState::SelectServiceTemplate => self.lhs_list.next(),
                 AppState::ChooseServiceName => (),
                 AppState::EditService => (),
+                AppState::EnteringEditMode => (),
             },
             KeyCode::Delete => (),
             KeyCode::F(_) => (),
@@ -82,6 +86,7 @@ impl<'a> App<'a> {
                 }
                 AppState::ChooseServiceName => self.service_name.push(ch),
                 AppState::EditService => (),
+                AppState::EnteringEditMode => (),
             },
             KeyCode::Backspace => {
                 if let AppState::ChooseServiceName = self.app_state {
@@ -121,7 +126,8 @@ impl<'a> App<'a> {
         v1
     }
 
-    fn initialise_edit(&mut self) {
+    pub fn initialise_edit(&mut self, content: Option<EditingList<'a>>) {
+        self.editing_service = content;
         self.app_state = AppState::EditService;
         self.lhs_list.items.clear();
     }
