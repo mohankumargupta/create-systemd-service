@@ -72,6 +72,7 @@ fn prerequisites() {
             eprintln!(
                 "~/.config/create-systemd-dir does not exist. Reinstall this program. Bye bye."
             );
+            exit(-1);
         }
     }
 }
