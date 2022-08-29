@@ -131,6 +131,9 @@ impl<'a> App<'a> {
     pub fn initialise_edit(&mut self) {
         let index = self.lhs_list.state.selected().unwrap();
         self.editing_text = self.lhs_list.items.get(index).unwrap().1.to_string();
+
+        self.editing_service = Some(EditingList::with_items(vec![]));
+
         self.app_state = AppState::EditService;
     }
 

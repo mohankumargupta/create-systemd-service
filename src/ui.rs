@@ -157,7 +157,9 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                 .highlight_style(Style::default().bg(Color::Rgb(117, 113, 94)));
 
             frame.render_widget(Clear, chunks[1]);
-            frame.render_widget(systemd_detail, chunks[1]);
+            let loo = &app.editing_service.as_ref().unwrap().state;
+            let mut qoo = loo.clone();
+            frame.render_stateful_widget(systemd_detail, chunks[1], &mut qoo);
             //frame.render_widget(input2, chunks[1]);
         }
         _ => (),
