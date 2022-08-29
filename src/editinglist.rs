@@ -1,39 +1,44 @@
-use tui::{text::Spans, widgets::ListState};
+use tui::widgets::ListState;
 
 /// List widget with TUI controlled states.
 #[derive(Debug)]
-pub struct EditingList<'a> {
+pub struct EditingList {
     /// List items (states).
-    pub items: Vec<Spans<'a>>,
+    //pub items: Vec<Spans<'a>>,
     /// State that can be modified by TUI.
     pub state: ListState,
+    pub item_count: usize,
 }
 
-impl<'a> EditingList<'a> {
+impl EditingList {
     /// Constructs a new instance of `StatefulList`.
-    pub fn new(items: Vec<Spans<'a>>, mut state: ListState) -> EditingList<'a> {
+    pub fn new(mut state: ListState, item_count: usize) -> EditingList {
         state.select(Some(0));
         //state.select(None);
-        Self { items, state }
+        Self { state, item_count }
     }
 
     /// Construct a new `StatefulList` with given items.
-    pub fn with_items(items: Vec<Spans<'a>>) -> EditingList<'a> {
+    /*
+    pub fn with_items(items: Vec<Spans>) -> EditingList {
         Self::new(items, ListState::default())
     }
+    */
 
     /// Returns the selected item.
 
+    /*
     fn selected(&self) -> Option<&Spans<'a>> {
         self.items.get(self.state.selected()?)
     }
+    */
 
     /// Selects the next item.
     pub fn next(&mut self) {
         let i = match self.state.selected() {
             Some(i) => {
-                if i >= self.items.len() - 1 {
-                    0
+                if i >= self.item_count - 1 {
+                    self.item_count - 1
                 } else {
                     i + 1
                 }
@@ -48,7 +53,7 @@ impl<'a> EditingList<'a> {
         let i = match self.state.selected() {
             Some(i) => {
                 if i == 0 {
-                    self.items.len() - 1
+                    0
                 } else {
                     i - 1
                 }

@@ -14,16 +14,16 @@ pub enum AppState {
     EditService,
 }
 
-pub struct App<'a> {
+pub struct App {
     pub lhs_list: StatefulList<String>,
     pub rhs_list_state: ListState,
     pub app_state: AppState,
     pub service_name: String,
-    pub editing_service: Option<EditingList<'a>>,
+    pub editing_service: Option<EditingList>,
     pub editing_text: String,
 }
 
-impl<'a> App<'a> {
+impl App {
     pub fn new() -> Self {
         let templates = Self::find_service_templates();
         let mut lhs_list_state = ListState::default();
@@ -69,13 +69,13 @@ impl<'a> App<'a> {
             KeyCode::Up => match self.app_state {
                 AppState::SelectServiceTemplate => self.lhs_list.previous(),
                 AppState::ChooseServiceName => (),
-                AppState::EditService => (),
+                AppState::EditService => self.previous_content_item(),
                 AppState::EnteringEditMode => (),
             },
             KeyCode::Down => match self.app_state {
                 AppState::SelectServiceTemplate => self.lhs_list.next(),
                 AppState::ChooseServiceName => (),
-                AppState::EditService => (),
+                AppState::EditService => self.next_content_item(),
                 AppState::EnteringEditMode => (),
             },
             KeyCode::Delete => (),
@@ -132,9 +132,18 @@ impl<'a> App<'a> {
         let index = self.lhs_list.state.selected().unwrap();
         self.editing_text = self.lhs_list.items.get(index).unwrap().1.to_string();
 
-        self.editing_service = Some(EditingList::with_items(vec![]));
+        let items_count = self.editing_text.lines().count();
+        self.editing_service = Some(EditingList::new(ListState::default(), items_count));
 
         self.app_state = AppState::EditService;
+    }
+
+    fn next_content_item(&mut self) {
+        self.editing_service.as_mut().unwrap().next();
+    }
+
+    fn previous_content_item(&mut self) {
+        self.editing_service.as_mut().unwrap().previous();
     }
 
     /*
