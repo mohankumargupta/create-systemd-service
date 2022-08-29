@@ -2,7 +2,7 @@ use tui::{
     backend::Backend,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
-    text::{Span, Spans},
+    text::{Span, Spans, Text},
     widgets::{Block, BorderType, Borders, Clear, List, ListItem, Paragraph, Tabs},
     Frame,
 };
@@ -129,7 +129,9 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             }
         }
         AppState::EditService => (),
-        AppState::EnteringEditMode => app.initialise_edit(),
+        AppState::EnteringEditMode => {
+            app.initialise_edit();
+        }
     }
 
     match app.app_state {
@@ -142,8 +144,21 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                         .border_style(Style::default().fg(Color::Yellow))
                         .title("Name of Service"),
                 );
+
+            let s = &app.editing_text;
+            let syntax_text = SyntaxText::new(s);
+            let items: Vec<Spans> = syntax_text.into();
+            let content_list_items: Vec<ListItem> = items
+                .iter()
+                .map(|s| ListItem::new(Text::from(s.clone())))
+                .collect();
+
+            let systemd_detail = List::new(content_list_items)
+                .highlight_style(Style::default().bg(Color::Rgb(117, 113, 94)));
+
             frame.render_widget(Clear, chunks[1]);
-            frame.render_widget(input2, chunks[1]);
+            frame.render_widget(systemd_detail, chunks[1]);
+            //frame.render_widget(input2, chunks[1]);
         }
         _ => (),
     }
