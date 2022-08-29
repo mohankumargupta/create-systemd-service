@@ -78,6 +78,8 @@ impl App {
                 AppState::EditService => self.next_content_item(),
                 AppState::EnteringEditMode => (),
             },
+            KeyCode::PageUp => self.first_content_item(),
+            KeyCode::PageDown => self.last_content_item(),
             KeyCode::Delete => (),
             KeyCode::F(_) => (),
             KeyCode::Char(ch) => match self.app_state {
@@ -144,6 +146,14 @@ impl App {
 
     fn previous_content_item(&mut self) {
         self.editing_service.as_mut().unwrap().previous();
+    }
+
+    fn first_content_item(&mut self) {
+        self.editing_service.as_mut().unwrap().first();
+    }
+
+    fn last_content_item(&mut self) {
+        self.editing_service.as_mut().unwrap().last();
     }
 
     /*

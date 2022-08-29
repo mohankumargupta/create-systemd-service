@@ -62,6 +62,14 @@ impl EditingList {
         };
         self.state.select(Some(i));
     }
+
+    pub fn first(&mut self) {
+        self.state.select(Some(0));
+    }
+
+    pub fn last(&mut self) {
+        self.state.select(Some(self.item_count - 1));
+    }
 }
 
 /*
