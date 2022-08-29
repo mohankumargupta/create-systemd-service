@@ -70,7 +70,7 @@ fn prerequisites() {
     if let Some(does_config_exist) = check_if_systemd_config_dir_exists() {
         if !does_config_exist {
             eprintln!(
-                "~/.config/create-systemd-dir does not exist. Reinstall this program. Bye bye."
+                "~/.config/create-systemd-service does not exist. Reinstall this program. Bye bye."
             );
             exit(-1);
         }
