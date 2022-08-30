@@ -1,3 +1,4 @@
+use regex::Regex;
 use tui::widgets::ListState;
 
 /// List widget with TUI controlled states.
@@ -24,31 +25,44 @@ impl Default for EditingList {
 }
 
 impl EditingList {
-    /// Constructs a new instance of `StatefulList`.
-    /*
-        pub fn new(mut state: ListState, item_count: usize) -> EditingList {
-            state.select(Some(0));
-            //state.select(None);
-            Self { state, item_count }
-        }
-    */
-    /// Construct a new `StatefulList` with given items.
-    /*
-    pub fn with_items(items: Vec<Spans>) -> EditingList {
-        Self::new(items, ListState::default())
-    }
-    */
-
-    /// Returns the selected item.
-
-    /*
-    fn selected(&self) -> Option<&Spans<'a>> {
-        self.items.get(self.state.selected()?)
-    }
-    */
-
-    /// Selects the next item.
     pub fn next(&mut self) {
+        let i = self.state.selected().unwrap();
+        let len = self.editing_text.len();
+
+        if i > len {
+            return;
+        }
+
+        let re: Regex = Regex::new(r"^(?P<key>[^=;#]+)=(?P<value>[^;#]*)").unwrap();
+        let range = (i + 1)..len;
+        for x in range {
+            if re.is_match(&self.editing_text[x]) {
+                self.state.select(Some(x));
+                return;
+            }
+        }
+    }
+
+    pub fn previous(&mut self) {
+        let i = self.state.selected().unwrap();
+
+        if i <= 0 {
+            return;
+        }
+
+        let re: Regex = Regex::new(r"^(?P<key>[^=;#]+)=(?P<value>[^;#]*)").unwrap();
+        let range = 0..(i - 1);
+        for x in range.rev() {
+            if re.is_match(&self.editing_text[x]) {
+                self.state.select(Some(x));
+                return;
+            }
+        }
+    }
+
+    /*
+    /// Selects the next item.
+    pub fn next2(&mut self) {
         let i = match self.state.selected() {
             Some(i) => {
                 if i >= self.item_count - 1 {
@@ -61,9 +75,11 @@ impl EditingList {
         };
         self.state.select(Some(i));
     }
+    */
 
+    /*
     /// Selects the previous item.
-    pub fn previous(&mut self) {
+    pub fn previous2(&mut self) {
         let i = match self.state.selected() {
             Some(i) => {
                 if i == 0 {
@@ -76,6 +92,7 @@ impl EditingList {
         };
         self.state.select(Some(i));
     }
+    */
 
     pub fn first(&mut self) {
         self.state.select(Some(0));
