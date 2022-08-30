@@ -8,7 +8,7 @@ pub struct EditingList {
     /// State that can be modified by TUI.
     pub state: ListState,
     pub item_count: usize,
-    pub editing_text: String,
+    pub editing_text: Vec<String>,
 }
 
 impl Default for EditingList {
@@ -16,7 +16,7 @@ impl Default for EditingList {
         let mut result = Self {
             state: ListState::default(),
             item_count: 0,
-            editing_text: "".to_string(),
+            editing_text: vec![],
         };
         result.state.select(Some(0));
         result

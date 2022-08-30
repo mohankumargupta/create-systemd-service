@@ -130,9 +130,10 @@ impl App {
 
     pub fn initialise_edit(&mut self) {
         let index = self.lhs_list.state.selected().unwrap();
-        self.editing_service.editing_text = self.lhs_list.items.get(index).unwrap().1.to_string();
+        let editing_text = self.lhs_list.items.get(index).unwrap().1.to_string();
+        self.editing_service.editing_text = editing_text.lines().map(|s| s.to_owned()).collect();
 
-        let items_count = self.editing_service.editing_text.lines().count();
+        let items_count = editing_text.lines().count();
         self.editing_service.item_count = items_count;
 
         self.app_state = AppState::EditService;
@@ -152,6 +153,10 @@ impl App {
 
     fn last_content_item(&mut self) {
         self.editing_service.last();
+    }
+
+    pub fn selected_template_contents(&self) -> String {
+        self.editing_service.editing_text.join("\n")
     }
 
     /*

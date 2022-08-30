@@ -147,7 +147,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                             );
             */
 
-            let s = &app.editing_service.editing_text;
+            let s = &app.selected_template_contents();
             let syntax_text = SyntaxText::new(s);
             let items: Vec<Spans> = syntax_text.into();
             let content_list_items: Vec<ListItem> = items
