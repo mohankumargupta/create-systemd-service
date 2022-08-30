@@ -129,8 +129,18 @@ impl App {
     }
 
     pub fn initialise_edit(&mut self) {
-        let index = self.lhs_list.state.selected().unwrap();
-        let editing_text = self.lhs_list.items.get(index).unwrap().1.to_string();
+        let index = self
+            .lhs_list
+            .state
+            .selected()
+            .expect("Highlighted value should always be valid.");
+        let editing_text = self
+            .lhs_list
+            .items
+            .get(index)
+            .expect("Highlighted value should always be valid.")
+            .1
+            .to_string();
         self.editing_service.editing_text = editing_text.lines().map(|s| s.to_owned()).collect();
 
         let items_count = editing_text.lines().count();
