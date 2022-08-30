@@ -136,16 +136,18 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
 
     match app.app_state {
         AppState::EnteringEditMode | AppState::EditService => {
-            let input2 = Paragraph::new(app.editing_text.as_ref())
-                .style(Style::default().fg(Color::White))
-                .block(
-                    Block::default()
-                        .borders(Borders::ALL)
-                        .border_style(Style::default().fg(Color::Yellow))
-                        .title("Name of Service"),
-                );
+            /*
+                        let input2 = Paragraph::new(app.editing_service.editing_text.as_ref())
+                            .style(Style::default().fg(Color::White))
+                            .block(
+                                Block::default()
+                                    .borders(Borders::ALL)
+                                    .border_style(Style::default().fg(Color::Yellow))
+                                    .title("Name of Service"),
+                            );
+            */
 
-            let s = &app.editing_text;
+            let s = &app.editing_service.editing_text;
             let syntax_text = SyntaxText::new(s);
             let items: Vec<Spans> = syntax_text.into();
             let content_list_items: Vec<ListItem> = items
@@ -157,9 +159,9 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                 .highlight_style(Style::default().bg(Color::Rgb(117, 113, 94)));
 
             frame.render_widget(Clear, chunks[1]);
-            let loo = &app.editing_service.as_ref().unwrap().state;
-            let mut qoo = loo.clone();
-            frame.render_stateful_widget(systemd_detail, chunks[1], &mut qoo);
+            let loo = &mut app.editing_service.state;
+            //let mut qoo = loo.clone();
+            frame.render_stateful_widget(systemd_detail, chunks[1], loo);
             //frame.render_widget(input2, chunks[1]);
         }
         _ => (),

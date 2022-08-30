@@ -8,16 +8,30 @@ pub struct EditingList {
     /// State that can be modified by TUI.
     pub state: ListState,
     pub item_count: usize,
+    pub editing_text: String,
+}
+
+impl Default for EditingList {
+    fn default() -> Self {
+        let mut result = Self {
+            state: ListState::default(),
+            item_count: 0,
+            editing_text: "".to_string(),
+        };
+        result.state.select(Some(0));
+        result
+    }
 }
 
 impl EditingList {
     /// Constructs a new instance of `StatefulList`.
-    pub fn new(mut state: ListState, item_count: usize) -> EditingList {
-        state.select(Some(0));
-        //state.select(None);
-        Self { state, item_count }
-    }
-
+    /*
+        pub fn new(mut state: ListState, item_count: usize) -> EditingList {
+            state.select(Some(0));
+            //state.select(None);
+            Self { state, item_count }
+        }
+    */
     /// Construct a new `StatefulList` with given items.
     /*
     pub fn with_items(items: Vec<Spans>) -> EditingList {

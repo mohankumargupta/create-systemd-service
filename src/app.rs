@@ -19,8 +19,7 @@ pub struct App {
     pub rhs_list_state: ListState,
     pub app_state: AppState,
     pub service_name: String,
-    pub editing_service: Option<EditingList>,
-    pub editing_text: String,
+    pub editing_service: EditingList,
 }
 
 impl App {
@@ -34,8 +33,7 @@ impl App {
             rhs_list_state: ListState::default(),
             app_state: AppState::SelectServiceTemplate,
             service_name: "".to_string(),
-            editing_service: None,
-            editing_text: "".to_string(),
+            editing_service: EditingList::default(),
         };
         app.lhs_list.state.select(Some(0));
         //app.rhs_list_state.select(Some(0));
@@ -132,28 +130,28 @@ impl App {
 
     pub fn initialise_edit(&mut self) {
         let index = self.lhs_list.state.selected().unwrap();
-        self.editing_text = self.lhs_list.items.get(index).unwrap().1.to_string();
+        self.editing_service.editing_text = self.lhs_list.items.get(index).unwrap().1.to_string();
 
-        let items_count = self.editing_text.lines().count();
-        self.editing_service = Some(EditingList::new(ListState::default(), items_count));
+        let items_count = self.editing_service.editing_text.lines().count();
+        self.editing_service.item_count = items_count;
 
         self.app_state = AppState::EditService;
     }
 
     fn next_content_item(&mut self) {
-        self.editing_service.as_mut().unwrap().next();
+        self.editing_service.next();
     }
 
     fn previous_content_item(&mut self) {
-        self.editing_service.as_mut().unwrap().previous();
+        self.editing_service.previous();
     }
 
     fn first_content_item(&mut self) {
-        self.editing_service.as_mut().unwrap().first();
+        self.editing_service.first();
     }
 
     fn last_content_item(&mut self) {
-        self.editing_service.as_mut().unwrap().last();
+        self.editing_service.last();
     }
 
     /*
