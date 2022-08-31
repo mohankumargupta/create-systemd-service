@@ -49,7 +49,7 @@ impl EditingList {
         }
 
         let re: Regex = Regex::new(r"^(?P<key>[^=;#]+)=(?P<value>[^;#]*)").unwrap();
-        let range = 0..(i - 1);
+        let range = 0..=(i - 1);
         for x in range.rev() {
             if re.is_match(&self.editing_text[x]) {
                 self.state.select(Some(x));
