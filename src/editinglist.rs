@@ -8,7 +8,6 @@ pub struct EditingList {
     //pub items: Vec<Spans<'a>>,
     /// State that can be modified by TUI.
     pub state: ListState,
-    pub item_count: usize,
     pub editing_text: Vec<String>,
 }
 
@@ -16,7 +15,6 @@ impl Default for EditingList {
     fn default() -> Self {
         let mut result = Self {
             state: ListState::default(),
-            item_count: 0,
             editing_text: vec![],
         };
         result.state.select(Some(0));
@@ -99,7 +97,7 @@ impl EditingList {
     }
 
     pub fn last(&mut self) {
-        self.state.select(Some(self.item_count - 1));
+        self.state.select(Some(self.editing_text.len() - 1));
     }
 }
 
