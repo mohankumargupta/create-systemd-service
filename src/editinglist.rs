@@ -20,7 +20,6 @@ impl Default for EditingList {
             editing_text: vec![],
         };
         result.state.select(Some(0));
-        result.next();
         result
     }
 }

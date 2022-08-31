@@ -142,6 +142,7 @@ impl App {
             .1
             .to_string();
         self.editing_service.editing_text = editing_text.lines().map(|s| s.to_owned()).collect();
+        self.editing_service.next();
 
         let items_count = editing_text.lines().count();
         self.editing_service.item_count = items_count;
