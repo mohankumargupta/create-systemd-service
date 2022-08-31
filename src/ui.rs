@@ -155,8 +155,8 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                 .map(|s| ListItem::new(Text::from(s.clone())))
                 .collect();
 
-            let systemd_detail = List::new(content_list_items)
-                .highlight_style(Style::default().bg(Color::Rgb(117, 113, 94)));
+            let systemd_detail =
+                List::new(content_list_items).highlight_style(Style::default().bg(Color::Yellow));
 
             //frame.render_widget(Clear, chunks[1]);
             let loo = &mut app.editing_service.state;
