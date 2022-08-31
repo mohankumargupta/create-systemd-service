@@ -155,8 +155,12 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                 .map(|s| ListItem::new(Text::from(s.clone())))
                 .collect();
 
-            let systemd_detail =
-                List::new(content_list_items).highlight_style(Style::default().bg(Color::Yellow));
+            let systemd_detail = List::new(content_list_items).highlight_style(
+                Style::default()
+                    .add_modifier(Modifier::BOLD)
+                    .patch(Style::default().bg(Color::DarkGray))
+                    .patch(Style::default().fg(Color::White)),
+            );
 
             //frame.render_widget(Clear, chunks[1]);
             let loo = &mut app.editing_service.state;
