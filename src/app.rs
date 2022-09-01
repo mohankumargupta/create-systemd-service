@@ -100,12 +100,16 @@ impl App {
                 AppState::ChooseServiceName => self.service_name.push(ch),
                 AppState::ViewService => (),
                 AppState::EnteringEditMode => (),
-                AppState::ModifyingService => (),
+                AppState::ModifyingService => {
+                    self.modifying_service_push(ch);
+                }
                 _ => (),
             },
             KeyCode::Backspace => {
                 if let AppState::ChooseServiceName = self.app_state {
                     self.service_name.pop();
+                } else if let AppState::ModifyingService = self.app_state {
+                    self.modifying_service_pop();
                 }
             }
             KeyCode::Esc => {
@@ -184,6 +188,20 @@ impl App {
         let (key, value) = self.editing_service.get_selected_key_value();
         self.altered_line = Some((key.to_string(), value.to_string()));
         self.app_state = AppState::ModifyingService;
+    }
+
+    fn modifying_service_push(&mut self, ch: char) {
+        let s = self.altered_line.as_ref().unwrap().1.as_str();
+        let t = self.altered_line.as_ref().unwrap().0.as_str();
+        let new_s = s.to_string() + &ch.to_string();
+        self.altered_line = Some((t.to_string(), new_s));
+    }
+
+    fn modifying_service_pop(&mut self) {
+        let t = self.altered_line.as_ref().unwrap().0.as_str();
+        let mut u = self.altered_line.as_ref().unwrap().1.to_string();
+        u.pop();
+        self.altered_line = Some((t.to_string(), u));
     }
 
     /*
