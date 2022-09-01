@@ -127,14 +127,14 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                 frame.render_widget(input, area);
             }
         }
-        AppState::EditService => (),
         AppState::EnteringEditMode => {
             app.initialise_edit();
         }
+        _ => (),
     }
 
     match app.app_state {
-        AppState::EnteringEditMode | AppState::EditService => {
+        AppState::EnteringEditMode | AppState::ViewService | AppState::ModifyingService => {
             /*
                         let input2 = Paragraph::new(app.editing_service.editing_text.as_ref())
                             .style(Style::default().fg(Color::White))
@@ -166,6 +166,21 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             //let mut qoo = loo.clone();
             frame.render_stateful_widget(systemd_detail, chunks[1], loo);
             //frame.render_widget(input2, chunks[1]);
+
+            if app.app_state == AppState::ModifyingService {
+                let input = Paragraph::new("")
+                    .style(Style::default().fg(Color::White))
+                    .block(
+                        Block::default()
+                            .borders(Borders::ALL)
+                            .border_style(Style::default().fg(Color::Yellow))
+                            .title("Edit property"),
+                    );
+
+                let area = centered_rect(60, 15, frame.size());
+                frame.render_widget(Clear, area); //this clears out the background
+                frame.render_widget(input, area);
+            }
         }
         _ => (),
     }

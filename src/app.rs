@@ -11,7 +11,10 @@ pub enum AppState {
     SelectServiceTemplate,
     ChooseServiceName,
     EnteringEditMode,
-    EditService,
+    ViewService,
+    ModifyingService,
+    ModifiedService,
+    SavingService,
 }
 
 pub struct App {
@@ -19,6 +22,7 @@ pub struct App {
     pub app_state: AppState,
     pub service_name: String,
     pub editing_service: EditingList,
+    pub altered_line: Option<(String, String)>,
 }
 
 impl App {
@@ -32,6 +36,7 @@ impl App {
             app_state: AppState::SelectServiceTemplate,
             service_name: "".to_string(),
             editing_service: EditingList::default(),
+            altered_line: None,
         };
         app.lhs_list.state.select(Some(0));
         //app.rhs_list_state.select(Some(0));
@@ -53,26 +58,34 @@ impl App {
         match key.code {
             KeyCode::Enter => match self.app_state {
                 AppState::SelectServiceTemplate => self.app_state = AppState::ChooseServiceName,
-                AppState::ChooseServiceName => {
-                    self.app_state = AppState::EnteringEditMode;
-                    //self.initialise_edit();
+                AppState::ChooseServiceName => self.app_state = AppState::EnteringEditMode,
+                AppState::ViewService => {
+                    self.store_key_value();
                 }
-                AppState::EditService => (),
                 AppState::EnteringEditMode => (),
+                AppState::ModifyingService => (),
+                AppState::ModifiedService => (),
+                AppState::SavingService => (),
             },
             KeyCode::Left => (),
             KeyCode::Right => (),
             KeyCode::Up => match self.app_state {
                 AppState::SelectServiceTemplate => self.lhs_list.previous(),
                 AppState::ChooseServiceName => (),
-                AppState::EditService => self.previous_content_item(),
+                AppState::ViewService => self.previous_content_item(),
                 AppState::EnteringEditMode => (),
+                AppState::ModifyingService => (),
+                AppState::ModifiedService => (),
+                AppState::SavingService => (),
             },
             KeyCode::Down => match self.app_state {
                 AppState::SelectServiceTemplate => self.lhs_list.next(),
                 AppState::ChooseServiceName => (),
-                AppState::EditService => self.next_content_item(),
+                AppState::ViewService => self.next_content_item(),
                 AppState::EnteringEditMode => (),
+                AppState::ModifyingService => (),
+                AppState::ModifiedService => (),
+                AppState::SavingService => (),
             },
             KeyCode::PageUp => self.first_content_item(),
             KeyCode::PageDown => self.last_content_item(),
@@ -85,8 +98,10 @@ impl App {
                     }
                 }
                 AppState::ChooseServiceName => self.service_name.push(ch),
-                AppState::EditService => (),
+                AppState::ViewService => (),
                 AppState::EnteringEditMode => (),
+                AppState::ModifyingService => (),
+                _ => (),
             },
             KeyCode::Backspace => {
                 if let AppState::ChooseServiceName = self.app_state {
@@ -142,7 +157,7 @@ impl App {
         self.editing_service.editing_text = editing_text.lines().map(|s| s.to_owned()).collect();
         self.editing_service.next();
 
-        self.app_state = AppState::EditService;
+        self.app_state = AppState::ViewService;
     }
 
     fn next_content_item(&mut self) {
@@ -163,6 +178,12 @@ impl App {
 
     pub fn selected_template_contents(&self) -> String {
         self.editing_service.editing_text.join("\n")
+    }
+
+    fn store_key_value(&mut self) {
+        let (key, value) = self.editing_service.get_selected_key_value();
+        self.altered_line = Some((key.to_string(), value.to_string()));
+        self.app_state = AppState::ModifyingService;
     }
 
     /*

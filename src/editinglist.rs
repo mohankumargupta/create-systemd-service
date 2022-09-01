@@ -94,10 +94,21 @@ impl EditingList {
 
     pub fn first(&mut self) {
         self.state.select(Some(0));
+        self.next();
     }
 
     pub fn last(&mut self) {
         self.state.select(Some(self.editing_text.len() - 1));
+        self.previous();
+    }
+
+    pub fn get_selected_key_value(&mut self) -> (&str, &str) {
+        let index = self.state.selected().unwrap();
+        let selected_line = self.editing_text[index].as_str();
+        let mut key_value = selected_line.split("=");
+        let key = key_value.next().unwrap();
+        let value = key_value.next().unwrap();
+        (key, value)
     }
 }
 
