@@ -168,18 +168,20 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             //frame.render_widget(input2, chunks[1]);
 
             if app.app_state == AppState::ModifyingService {
-                let input = Paragraph::new("")
+                let (key, value) = app.altered_line.as_ref().unwrap();
+
+                let input2 = Paragraph::new(value.to_string())
                     .style(Style::default().fg(Color::White))
                     .block(
                         Block::default()
                             .borders(Borders::ALL)
                             .border_style(Style::default().fg(Color::Yellow))
-                            .title("Edit property"),
+                            .title(key.to_string()),
                     );
 
-                let area = centered_rect(60, 15, frame.size());
-                frame.render_widget(Clear, area); //this clears out the background
-                frame.render_widget(input, area);
+                let area2 = centered_rect(60, 15, frame.size());
+                frame.render_widget(Clear, area2); //this clears out the background
+                frame.render_widget(input2, area2);
             }
         }
         _ => (),
