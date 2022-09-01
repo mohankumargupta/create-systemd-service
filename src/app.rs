@@ -2,6 +2,7 @@ use std::fs;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use directories::ProjectDirs;
+use regex::Regex;
 use tui::widgets::ListState;
 
 use crate::{editinglist::EditingList, statefullist::StatefulList};
@@ -13,7 +14,6 @@ pub enum AppState {
     EnteringEditMode,
     ViewService,
     ModifyingService,
-    ModifiedService,
     SavingService,
 }
 
@@ -63,8 +63,10 @@ impl App {
                     self.store_key_value();
                 }
                 AppState::EnteringEditMode => (),
-                AppState::ModifyingService => (),
-                AppState::ModifiedService => (),
+                AppState::ModifyingService => {
+                    self.modify_unit();
+                    self.app_state = AppState::ViewService;
+                }
                 AppState::SavingService => (),
             },
             KeyCode::Left => (),
@@ -75,7 +77,6 @@ impl App {
                 AppState::ViewService => self.previous_content_item(),
                 AppState::EnteringEditMode => (),
                 AppState::ModifyingService => (),
-                AppState::ModifiedService => (),
                 AppState::SavingService => (),
             },
             KeyCode::Down => match self.app_state {
@@ -84,7 +85,6 @@ impl App {
                 AppState::ViewService => self.next_content_item(),
                 AppState::EnteringEditMode => (),
                 AppState::ModifyingService => (),
-                AppState::ModifiedService => (),
                 AppState::SavingService => (),
             },
             KeyCode::PageUp => self.first_content_item(),
@@ -202,6 +202,16 @@ impl App {
         let mut u = self.altered_line.as_ref().unwrap().1.to_string();
         u.pop();
         self.altered_line = Some((t.to_string(), u));
+    }
+
+    fn modify_unit(&mut self) {
+        //let (key, _value) = self.altered_line.as_ref().unwrap();
+        let index = self.editing_service.state.selected().unwrap();
+        let item = &self.editing_service.editing_text[index];
+        let new_text = &self.altered_line.as_ref().unwrap().1.to_string();
+        let re = Regex::new(r"^(?P<key>[^=;#]+)=(?P<value>[^;#]*)").unwrap();
+        let new_line = re.replace_all(item, format!("$key={new_text}")).to_string();
+        self.editing_service.editing_text[index] = new_line;
     }
 
     /*
