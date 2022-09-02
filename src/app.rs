@@ -1,7 +1,11 @@
-use std::fs;
+use std::{
+    fs::{self, File},
+    io::{BufWriter, Write},
+};
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use directories::ProjectDirs;
+use nix::unistd::Uid;
 use regex::Regex;
 use tui::widgets::ListState;
 
@@ -14,7 +18,6 @@ pub enum AppState {
     EnteringEditMode,
     ViewService,
     ModifyingService,
-    SavingService,
 }
 
 pub struct App {
@@ -48,6 +51,12 @@ impl App {
             if let KeyCode::Char(c) = key.code {
                 match c {
                     'v' => return false,
+                    's' => {
+                        if self.app_state == AppState::ViewService {
+                            self.save();
+                            return true;
+                        }
+                    }
                     _ => (),
                 }
             }
@@ -67,7 +76,6 @@ impl App {
                     self.modify_unit();
                     self.app_state = AppState::ViewService;
                 }
-                AppState::SavingService => (),
             },
             KeyCode::Left => (),
             KeyCode::Right => (),
@@ -77,7 +85,6 @@ impl App {
                 AppState::ViewService => self.previous_content_item(),
                 AppState::EnteringEditMode => (),
                 AppState::ModifyingService => (),
-                AppState::SavingService => (),
             },
             KeyCode::Down => match self.app_state {
                 AppState::SelectServiceTemplate => self.lhs_list.next(),
@@ -85,7 +92,6 @@ impl App {
                 AppState::ViewService => self.next_content_item(),
                 AppState::EnteringEditMode => (),
                 AppState::ModifyingService => (),
-                AppState::SavingService => (),
             },
             KeyCode::PageUp => self.first_content_item(),
             KeyCode::PageDown => self.last_content_item(),
@@ -103,7 +109,6 @@ impl App {
                 AppState::ModifyingService => {
                     self.modifying_service_push(ch);
                 }
-                _ => (),
             },
             KeyCode::Backspace => {
                 if let AppState::ChooseServiceName = self.app_state {
@@ -214,9 +219,23 @@ impl App {
         self.editing_service.editing_text[index] = new_line;
     }
 
-    /*
-    pub fn setEditingText(&mut self, content: String) {
-        self.editing_text = content;
+    fn save(&mut self) {
+        let is_root = Uid::effective().is_root();
+        let file_name: String;
+        let service_name = self.service_name.to_string();
+        if is_root {
+            file_name = format!("/etc/systemd/system/{service_name}.service");
+        } else {
+            file_name = format!("~/.config/systemd/user/{service_name}.service")
+        }
+
+        let f = File::create(file_name).expect("Unable to create file");
+        let mut f = BufWriter::new(f);
+        let result = self
+            .editing_service
+            .editing_text
+            .iter()
+            .fold(String::new(), |acc, l| acc + l + "\n");
+        f.write_all(result.as_bytes()).expect("all good");
     }
-    */
 }

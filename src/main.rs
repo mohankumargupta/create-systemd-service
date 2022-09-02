@@ -88,7 +88,9 @@ fn start_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<()> {
                 if let KeyCode::Char('x') = key.code {
                     return Ok(());
                 }
-            } else if !app.handle_keyboard(key) {
+            }
+
+            if !app.handle_keyboard(key) {
                 return Ok(());
             }
         }
