@@ -49,17 +49,17 @@ impl App {
     pub fn handle_keyboard(&mut self, key: KeyEvent) -> bool {
         if key.modifiers == KeyModifiers::CONTROL {
             if let KeyCode::Char(c) = key.code {
-                match c {
-                    'v' => return false,
-                    's' => {
-                        if self.app_state == AppState::ViewService {
-                            self.save();
-                            return true;
-                        }
-                    }
-                    _ => (),
+                if c == 'v' {
+                    return false;
                 }
+
+                if c == 's' {
+                    if self.app_state == AppState::ViewService {
+                        self.save();
+                    }
+                };
             }
+            return true;
         }
 
         let returncode = true;
