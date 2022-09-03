@@ -21,38 +21,46 @@ impl Default for MenuCommands {
     fn default() -> Self {
         let commands = HashMap::from([
             (
+                AppState::SelectServiceTemplate,
+                vec![
+                    MenuCommand::new("Move Up", "↑"),
+                    MenuCommand::new("Move Down", "↑"),
+                    MenuCommand::new("Select", "Enter"),
+                    MenuCommand::new("Exit", "^X"),
+                ],
+            ),
+            (
                 AppState::ChooseServiceName,
                 vec![
-                    MenuCommand::new("↑", "Move Up"),
-                    MenuCommand::new("↑", "Move Down"),
-                    MenuCommand::new("Enter", "Select"),
-                    MenuCommand::new("^X", "Exit"),
+                    MenuCommand::new("Select", "Enter"),
+                    MenuCommand::new("Back", "ESC"),
+                    MenuCommand::new("Exit", "^X"),
                 ],
             ),
             (
                 AppState::EnteringEditMode,
                 vec![
-                    MenuCommand::new("Enter", "Confirm"),
-                    MenuCommand::new("ESC", "Back"),
-                    MenuCommand::new("^X", "Exit"),
+                    MenuCommand::new("Confirm", "Enter"),
+                    MenuCommand::new("Back", "ESC"),
+                    MenuCommand::new("Exit", "^X"),
                 ],
             ),
             (
                 AppState::ViewService,
                 vec![
-                    MenuCommand::new("↑", "Move Up"),
-                    MenuCommand::new("↑", "Move Down"),
-                    MenuCommand::new("Enter", "Edit"),
-                    MenuCommand::new("^S", "Save"),
-                    MenuCommand::new("^X", "Exit"),
+                    MenuCommand::new("Move Up", "↑"),
+                    MenuCommand::new("Move Down", "↑"),
+                    MenuCommand::new("Edit", "Enter"),
+                    MenuCommand::new("Save", "^S"),
+                    MenuCommand::new("Exit", "^X"),
                 ],
             ),
             (
                 AppState::ModifyingService,
                 vec![
-                    MenuCommand::new("Enter", "Confirm"),
-                    MenuCommand::new("ESC", "Back"),
-                    MenuCommand::new("^X", "Exit"),
+                    MenuCommand::new("Confirm", "Enter"),
+                    MenuCommand::new("Back", "ESC"),
+                    MenuCommand::new("Exit", "^X"),
                 ],
             ),
         ]);

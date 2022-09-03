@@ -9,6 +9,7 @@ use tui::{
 
 use crate::{
     app::{App, AppState},
+    command::MenuCommands,
     syntax::SyntaxText,
 };
 
@@ -52,19 +53,35 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .select(0)
         .divider(Span::raw("|"));
 
-    let copyright = Paragraph::new("pet-CLI 2020 - all rights reserved")
+    let commands_map = MenuCommands::default();
+    let commands = commands_map.commands.get(&app.app_state).unwrap();
+
+    let mut line_span = Spans(Vec::with_capacity(commands.iter().count()));
+    for command in commands.iter() {
+        line_span.0.push(Span::styled(
+            command.shortcut,
+            Style::default().bg(Color::Green),
+        ));
+        line_span.0.push(Span::from(" ".to_string() + command.name));
+    }
+
+    let commands_text = Text::from(line_span);
+    let commands_paragraph = Paragraph::new(commands_text)
         .style(Style::default().fg(Color::LightCyan))
         .alignment(Alignment::Center)
         .block(
             Block::default()
                 .borders(Borders::ALL)
                 .style(Style::default().fg(Color::White))
-                .title("Copyright")
+                .title("Commands")
                 .border_type(BorderType::Plain),
         );
 
+    //let final_commands_span: Vec<Span> = commands.iter().map(|s| Span::from(s.shortcut)).collect();
+    //let final_commands = Text::from(final_commands_span);
+
     frame.render_widget(tabs, chunks[0]);
-    frame.render_widget(copyright, chunks[2]);
+    frame.render_widget(commands_paragraph, chunks[2]);
 
     match app.app_state {
         AppState::SelectServiceTemplate | AppState::ChooseServiceName => {
