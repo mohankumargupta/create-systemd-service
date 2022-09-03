@@ -155,17 +155,6 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
 
     match app.app_state {
         AppState::EnteringEditMode | AppState::ViewService | AppState::ModifyingService => {
-            /*
-                        let input2 = Paragraph::new(app.editing_service.editing_text.as_ref())
-                            .style(Style::default().fg(Color::White))
-                            .block(
-                                Block::default()
-                                    .borders(Borders::ALL)
-                                    .border_style(Style::default().fg(Color::Yellow))
-                                    .title("Name of Service"),
-                            );
-            */
-
             let s = &app.selected_template_contents();
             let syntax_text = SyntaxText::new(s);
             let items: Vec<Spans> = syntax_text.into();
