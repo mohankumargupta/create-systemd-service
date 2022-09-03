@@ -1,4 +1,5 @@
 mod app;
+mod command;
 mod editinglist;
 mod statefullist;
 mod syntax;

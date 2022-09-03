@@ -11,7 +11,7 @@ use tui::widgets::ListState;
 
 use crate::{editinglist::EditingList, statefullist::StatefulList};
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq, Hash)]
 pub enum AppState {
     SelectServiceTemplate,
     ChooseServiceName,
