@@ -24,7 +24,7 @@ impl Default for MenuCommands {
                 AppState::SelectServiceTemplate,
                 vec![
                     MenuCommand::new("Move Up", "↑"),
-                    MenuCommand::new("Move Down", "↑"),
+                    MenuCommand::new("Move Down", "🠗"),
                     MenuCommand::new("Select", "Enter"),
                     MenuCommand::new("Exit", "^X"),
                 ],

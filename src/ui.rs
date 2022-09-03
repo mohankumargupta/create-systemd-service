@@ -60,14 +60,19 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     for command in commands.iter() {
         line_span.0.push(Span::styled(
             command.shortcut,
-            Style::default().bg(Color::Green),
+            Style::default()
+                .bg(Color::White)
+                .fg(Color::Black)
+                .patch(Style::default().add_modifier(Modifier::BOLD)),
         ));
-        line_span.0.push(Span::from(" ".to_string() + command.name));
+        line_span
+            .0
+            .push(Span::from(" ".to_string() + command.name + "   "));
     }
 
     let commands_text = Text::from(line_span);
     let commands_paragraph = Paragraph::new(commands_text)
-        .style(Style::default().fg(Color::LightCyan))
+        .style(Style::default().fg(Color::White))
         .alignment(Alignment::Center)
         .block(
             Block::default()
