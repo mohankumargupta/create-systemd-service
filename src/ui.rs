@@ -13,6 +13,13 @@ use crate::{
     syntax::SyntaxText,
 };
 
+const TOP_SECTION: usize = 0;
+const MAIN_SECTION: usize = 1;
+const BOTTOM_SECTION: usize = 2;
+
+const MAIN_LHS: usize = 0;
+const MAIN_RHS: usize = 1;
+
 pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     let size = frame.size();
 
@@ -53,7 +60,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .select(0)
         .divider(Span::raw("|"));
 
-    frame.render_widget(tabs, chunks[0]);
+    frame.render_widget(tabs, chunks[TOP_SECTION]);
 
     match app.app_state {
         AppState::SelectServiceTemplate | AppState::ChooseServiceName => {
@@ -92,14 +99,18 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
 
             let systemd_detail = List::from(styled_contents);
 
-            let pets_chunks = Layout::default()
+            let main_section_chunks = Layout::default()
                 .direction(Direction::Horizontal)
                 .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
-                .split(chunks[1]);
+                .split(chunks[MAIN_SECTION]);
 
-            frame.render_widget(Clear, pets_chunks[1]);
-            frame.render_widget(systemd_detail, pets_chunks[1]);
-            frame.render_stateful_widget(list, pets_chunks[0], &mut app.lhs_list.state);
+            frame.render_widget(Clear, main_section_chunks[MAIN_RHS]);
+            frame.render_widget(systemd_detail, main_section_chunks[MAIN_RHS]);
+            frame.render_stateful_widget(
+                list,
+                main_section_chunks[MAIN_LHS],
+                &mut app.lhs_list.state,
+            );
 
             let input = Paragraph::new(app.service_name.as_ref())
                 .style(Style::default().fg(Color::White))
@@ -151,7 +162,7 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
                 .border_type(BorderType::Plain),
         );
 
-    frame.render_widget(commands_paragraph, chunks[2]);
+    frame.render_widget(commands_paragraph, chunks[BOTTOM_SECTION]);
 
     match app.app_state {
         AppState::EnteringEditMode | AppState::ViewService | AppState::ModifyingService => {
