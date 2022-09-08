@@ -3,7 +3,7 @@ use tui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans, Text},
-    widgets::{Block, BorderType, Borders, Clear, List, ListItem, Paragraph, Tabs},
+    widgets::{Block, BorderType, Borders, Clear, List, ListItem, Paragraph},
     Frame,
 };
 
@@ -15,7 +15,8 @@ use crate::{
 
 const TOP_SECTION: usize = 0;
 const MAIN_SECTION: usize = 1;
-const BOTTOM_SECTION: usize = 2;
+const STATUS_SECTION: usize = 2;
+const BOTTOM_SECTION: usize = 3;
 
 const MAIN_LHS: usize = 0;
 const MAIN_RHS: usize = 1;
@@ -30,12 +31,14 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
             [
                 Constraint::Length(3),
                 Constraint::Min(2),
+                Constraint::Length(1),
                 Constraint::Length(3),
             ]
             .as_ref(),
         )
         .split(size);
 
+    /*
     let menu_titles = vec!["Home", "Quit"];
     let menu: Vec<Spans> = menu_titles
         .iter()
@@ -61,6 +64,25 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         .divider(Span::raw("|"));
 
     frame.render_widget(tabs, chunks[TOP_SECTION]);
+    */
+
+    let title = match app.app_state {
+        AppState::SelectServiceTemplate => "Select template",
+        AppState::ChooseServiceName => "Enter service name",
+        _ => "Edit Service",
+    };
+
+    let title_paragraph = Paragraph::new(title)
+        .style(Style::default().fg(Color::White))
+        .alignment(Alignment::Center)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                .border_type(BorderType::Plain),
+        );
+
+    frame.render_widget(title_paragraph, chunks[TOP_SECTION]);
 
     match app.app_state {
         AppState::SelectServiceTemplate | AppState::ChooseServiceName => {
@@ -130,7 +152,19 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
         AppState::EnteringEditMode => {
             app.initialise_edit();
         }
-        _ => (),
+        AppState::ViewService => (),
+        AppState::ModifyingService => {}
+    }
+
+    if app.just_saved {
+        let status_message = "Saved in /etc/systemd/system.";
+
+        let status_paragraph = Paragraph::new(status_message)
+            .style(Style::default().fg(Color::Black).bg(Color::White))
+            .alignment(Alignment::Center);
+
+        frame.render_widget(status_paragraph, chunks[STATUS_SECTION]);
+        app.just_saved = false;
     }
 
     let commands_map = MenuCommands::default();

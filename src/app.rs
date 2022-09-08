@@ -26,6 +26,7 @@ pub struct App {
     pub service_name: String,
     pub editing_service: EditingList,
     pub altered_line: Option<(String, String)>,
+    pub just_saved: bool,
 }
 
 impl App {
@@ -40,6 +41,7 @@ impl App {
             service_name: "".to_string(),
             editing_service: EditingList::default(),
             altered_line: None,
+            just_saved: false,
         };
         app.lhs_list.state.select(Some(0));
         //app.rhs_list_state.select(Some(0));
@@ -56,6 +58,7 @@ impl App {
                 if c == 's' {
                     if self.app_state == AppState::ViewService {
                         self.save();
+                        self.just_saved = true;
                     }
                 };
             }
