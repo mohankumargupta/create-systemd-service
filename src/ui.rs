@@ -67,9 +67,9 @@ pub fn ui<B: Backend>(frame: &mut Frame<B>, app: &mut App) {
     */
 
     let title = match app.app_state {
-        AppState::SelectServiceTemplate => "Select template",
-        AppState::ChooseServiceName => "Enter service name",
-        _ => "Edit Service",
+        AppState::SelectServiceTemplate => "Select template".to_string(),
+        AppState::ChooseServiceName => "Enter service name".to_string(),
+        _ => format!("{}.service", app.service_name),
     };
 
     let title_paragraph = Paragraph::new(title)

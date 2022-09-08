@@ -4,11 +4,12 @@ After=
 Wants=
 
 [Service]
-Type=simple
 User=root
+ExecStartPre=/bin/true
 ExecStart=/bin/true
+ExecStartPost=/bin/true
 WorkingDirectory=/home
-Restart=no
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
